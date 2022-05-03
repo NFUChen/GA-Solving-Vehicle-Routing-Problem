@@ -40,9 +40,9 @@ class Vehicle:
 
     def __repr__(self) -> str:
         capacity = f"Capacity: {self.capacity}\n"
-        fuel_fee = f"Fuel Fee: {self.fuel_fee}\n"
-        fuel_efficiency = f"Fuel Efficiency: {self.fuel_efficiency}\n"
-        fixed_cost = f"Fixed Cost: {self.fixed_cost}\n"
+        fuel_fee = f"Fuel Fee: ${self.fuel_fee}\n"
+        fuel_efficiency = f"Fuel Efficiency: {self.fuel_efficiency} l/km\n"
+        fixed_cost = f"Fixed Cost: ${self.fixed_cost}\n"
         depots_delivery_status = f"Depots Delivery Status: {self.depots_delivery_status}\n"
         sep = "-" * 60 + "\n"
 

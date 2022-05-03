@@ -5,23 +5,23 @@ from typing import List
 class Depot:
     def __init__(self,
                  demand: int,
-                 earilest_time_must_be_delivered: int,
-                 delay_time_allowed: int,
+                 earilest_time_can_be_delivered: int,
+                 latest_time_must_be_delivered: int,
                  distance_to_other_depots: List[int],
                  delivery_time_to_other_depots: List[int],
                  depot_name: str = None) -> None:
         '''
         Data Source:
         demand: d_i.csv
-        earilest_time_must_be_delivered: e_i.csv
-        delay_time_allowed: l_i.csv
+        earilest_time_can_be_delivered: e_i.csv
+        latest_time_must_be_delivered: l_i.csv
         distance_to_other_depot: c_ij.csv
         time_to_other_depot: t_ij.csv
         '''
         self.depot_name = depot_name
         self.demand = demand
-        self.earilest_time_must_be_delivered = earilest_time_must_be_delivered
-        self.delay_time_allowed = delay_time_allowed
+        self.earilest_time_can_be_delivered = earilest_time_can_be_delivered
+        self.latest_time_must_be_delivered = latest_time_must_be_delivered
         self._distance_to_other_depots = {depot_name: distance
                                           for depot_name, distance in enumerate(distance_to_other_depots)}
         self._delivery_time_to_other_depots = {depot_name: time
@@ -33,8 +33,8 @@ class Depot:
     def __repr__(self) -> str:
         depot_name = f"Depot Name: {self.depot_name}\n"
         demand = f"Demand: {self.demand}\n"
-        earilest_time_must_be_delivered = f"Delivery Time Delay: {self.earilest_time_must_be_delivered}\n"
-        delay_time_allowed = f"Delay Time Allowed: {self.delay_time_allowed}\n"
+        earilest_time_can_be_delivered = f"Earilest Time Can Be Delivered: Starting Time after {self.earilest_time_can_be_delivered} Mins\n"
+        latest_time_must_be_delivered = f"Latest Time Must Be Delivered: Starting Time after {self.latest_time_must_be_delivered} Mins\n"
         _distance_to_other_depots = f"Distance to Other Depots: {self._distance_to_other_depots}\n"
         _delivery_time_to_other_depots = f"Delivery Time to Other Depots: {self._delivery_time_to_other_depots}\n"
         sep = "-" * 60 + "\n"
@@ -42,8 +42,8 @@ class Depot:
         return "".join(
             [depot_name,
              demand,
-             earilest_time_must_be_delivered,
-             delay_time_allowed,
+             earilest_time_can_be_delivered,
+             latest_time_must_be_delivered,
              _distance_to_other_depots,
              _delivery_time_to_other_depots,
              sep]
