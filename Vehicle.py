@@ -7,7 +7,7 @@ class Vehicle:
                  fuel_fee: int,
                  fuel_efficiency: float,
                  fixed_cost: float,
-                 depots_can_be_delivered: List[int],
+                 depots_delivery_status: List[int],
                  vehicle_name: str = None,
                  shipement_discharging_time: int = 20,
                  maximum_available_time: int = 480
@@ -25,13 +25,13 @@ class Vehicle:
         self.fuel_fee = fuel_fee
         self.fuel_efficiency = fuel_efficiency
         self.fixed_cost = fixed_cost
-        self.depots_can_be_delivered = {depot_name: is_can_be_delivered
-                                        for depot_name, is_can_be_delivered in enumerate(depots_can_be_delivered)}
+        self.depots_delivery_status = {depot_name: is_can_be_delivered
+                                       for depot_name, is_can_be_delivered in enumerate(depots_delivery_status)}
         self._available_depot = [unavailable
-                                 for unavailable in self.depots_can_be_delivered
-                                 if self.depots_can_be_delivered[unavailable] == 1]
+                                 for unavailable in self.depots_delivery_status
+                                 if self.depots_delivery_status[unavailable] == 1]
         self._all_depot_names = [
-            name for name in self.depots_can_be_delivered]
+            name for name in self.depots_delivery_status]
         self.vehicle_name = vehicle_name
         # 固定服務時間(卸貨)為20分鐘
         self.shipement_discharging_time = shipement_discharging_time
@@ -43,7 +43,7 @@ class Vehicle:
         fuel_fee = f"Fuel Fee: {self.fuel_fee}\n"
         fuel_efficiency = f"Fuel Efficiency: {self.fuel_efficiency}\n"
         fixed_cost = f"Fixed Cost: {self.fixed_cost}\n"
-        depots_can_be_delivered = f"Depots Can be Delivered: {self.depots_can_be_delivered}\n"
+        depots_delivery_status = f"Depots Delivery Status: {self.depots_delivery_status}\n"
         sep = "-" * 60 + "\n"
 
         return "".join(
@@ -51,7 +51,7 @@ class Vehicle:
              fuel_fee,
              fuel_efficiency,
              fixed_cost,
-             depots_can_be_delivered,
+             depots_delivery_status,
              sep]
         )
 
@@ -63,7 +63,7 @@ class Vehicle:
             raise ValueError(
                 f"'depot_id' must be one of the following: {self._all_depot_names}")
 
-        # return self.depots_can_be_delivered[depot_id] == 1
+        # return self.depots_delivery_status[depot_id] == 1
         return depot_id in self._available_depot
 
     def _is_valid_depot(self, depot_id: int) -> bool:
@@ -75,6 +75,6 @@ if __name__ == "__main__":
                        fuel_fee=24,
                        fuel_efficiency=0.1,
                        fixed_cost=1000,
-                       depots_can_be_delivered=[0, 1, 1, 1, 1, 1, 1, 1, 1])
+                       depots_delivery_status=[0, 1, 1, 1, 1, 1, 1, 1, 1])
 
     print(vehicle1.is_depot_can_be_delivered())
