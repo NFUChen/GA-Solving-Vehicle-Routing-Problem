@@ -9,7 +9,8 @@ class Vehicle:
                  fixed_cost: float,
                  depots_can_be_delivered: List[int],
                  vehicle_name: str = None,
-                 shipement_discharging_time: int = 20
+                 shipement_discharging_time: int = 20,
+                 maximum_available_time: int = 480
                  ) -> None:
         '''
         Data Source:
@@ -26,11 +27,16 @@ class Vehicle:
         self.fixed_cost = fixed_cost
         self.depots_can_be_delivered = {depot_name: is_can_be_delivered
                                         for depot_name, is_can_be_delivered in enumerate(depots_can_be_delivered)}
+        self._available_depot = [unavailable
+                                 for unavailable in self.depots_can_be_delivered
+                                 if self.depots_can_be_delivered[unavailable] == 1]
         self._all_depot_names = [
             name for name in self.depots_can_be_delivered]
         self.vehicle_name = vehicle_name
         # 固定服務時間(卸貨)為20分鐘
         self.shipement_discharging_time = shipement_discharging_time
+        # 車輛使用時間限制480分鐘
+        self.maximum_available_time = maximum_available_time
 
     def __repr__(self) -> str:
         capacity = f"Capacity: {self.capacity}\n"
@@ -57,7 +63,8 @@ class Vehicle:
             raise ValueError(
                 f"'depot_id' must be one of the following: {self._all_depot_names}")
 
-        return self.depots_can_be_delivered[depot_id] == 1
+        # return self.depots_can_be_delivered[depot_id] == 1
+        return depot_id in self._available_depot
 
     def _is_valid_depot(self, depot_id: int) -> bool:
         return depot_id in self._all_depot_names
