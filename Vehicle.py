@@ -1,6 +1,4 @@
 from typing import List, Dict
-
-
 class Vehicle:
     def __init__(self,
                  capacity: int,
