@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 
 class Vehicle:
@@ -20,6 +20,7 @@ class Vehicle:
         fixed_cost: f_ck.csv
         depot_can_be_delivered: a_ik.csv
         '''
+        self._MAXIXMUM_CAPACITY = capacity
 
         self.capacity = capacity
         self.fuel_fee = fuel_fee
@@ -54,6 +55,22 @@ class Vehicle:
              depots_delivery_status,
              sep]
         )
+
+    def discharge(self, demand: Dict[str, int]) -> None:
+        for product, demand_quantity in demand.items():
+            if product not in self.capacity:
+                raise TypeError(
+                    f"Product mismath, Vechicle doesn't have '{product}'")
+            self.capacity[product] -= demand_quantity
+
+    def replenish(self):
+        self.capacity = self._MAXIXMUM_CAPACITY
+
+    def is_out_of_stock(self) -> bool:
+        for product in self.capacity:
+            if self.capacity[product] < 0:
+                return True
+        return False
 
     def is_depot_can_be_delivered(self, depot_id: int) -> bool:
         '''
