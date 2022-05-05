@@ -8,6 +8,7 @@ class Depot:
                  latest_time_must_be_delivered: int,
                  distance_to_other_depots: List[int],
                  delivery_time_to_other_depots: List[int],
+                 vehicle_depots_delivery_status: List[int],
                  depot_name: str = None) -> None:
         '''
         Data Source:
@@ -25,9 +26,15 @@ class Depot:
                                           for depot_name, distance in enumerate(distance_to_other_depots)}
         self._delivery_time_to_other_depots = {depot_name: time
                                                for depot_name, time in enumerate(delivery_time_to_other_depots)}
-
+        self._vehicle_depots_delivery_status = {
+            depot_name: delivery_status for depot_name, delivery_status in enumerate(vehicle_depots_delivery_status)
+        }
         self._all_depot_names = [
             name for name in self._distance_to_other_depots]
+        self._available_vehicles = [
+            vehicle_idx for vehicle_idx, status in self._vehicle_depots_delivery_status.items()
+            if status == 1]
+        
 
     def __repr__(self) -> str:
         depot_name = f"Depot Name: {self.depot_name}\n"
@@ -36,6 +43,8 @@ class Depot:
         latest_time_must_be_delivered = f"Latest Time Must Be Delivered: Starting Time after {self.latest_time_must_be_delivered} Mins\n"
         _distance_to_other_depots = f"Distance to Other Depots: {self._distance_to_other_depots}\n"
         _delivery_time_to_other_depots = f"Delivery Time to Other Depots: {self._delivery_time_to_other_depots}\n"
+        _vehicle_depots_delivery_status= f"Vehicle Delivery Status: {self._vehicle_depots_delivery_status}\n"
+        _availabe_vehicles = f"Available Vehices: {self._available_vehicles}\n"
         sep = "-" * 60 + "\n"
 
         return "".join(
@@ -45,6 +54,8 @@ class Depot:
              latest_time_must_be_delivered,
              _distance_to_other_depots,
              _delivery_time_to_other_depots,
+             _vehicle_depots_delivery_status,
+            _availabe_vehicles,
              sep]
         )
 

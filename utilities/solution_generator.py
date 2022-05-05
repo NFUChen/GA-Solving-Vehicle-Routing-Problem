@@ -1,6 +1,7 @@
+from copy import deepcopy
 from typing import List, Dict
 from random import choice
-from urllib import response
+from time import time
 
 from .constraint_checker import ConstraintChecker
 from .base_class import BuilderFactory
@@ -10,7 +11,16 @@ from .route_status_code import RouteStatusCode
 
 # e.g.,  {0: [], 1: [0, 8, 6, 0], 2: [0, 7, 5, 0], 3: [0, 3, 0], 4: []}
 Solution = Dict[int, List[int]]
-
+def timer(func):
+    # This function shows the execution time of 
+    # the function object passed
+    def wrap_func(*args, **kwargs):
+        t1 = time()
+        result = func(*args, **kwargs)
+        t2 = time()
+        print(f'Function {func.__name__!r} executed in {(t2-t1):.4f}s')
+        return result
+    return wrap_func
 
 class SolutionGenerator(BuilderFactory):
     def __init__(self, constraint_checker: ConstraintChecker = ConstraintChecker()) -> None:
@@ -50,12 +60,13 @@ class SolutionGenerator(BuilderFactory):
 
         # while there exists any depot in all_depots_to_be_assigned
         while (len(all_depots_to_be_assigned) > 0):
-            selected_vehicle = choice(self.all_vehicle_names)
-            selected_depot = all_depots_to_be_assigned.pop()
-            if not self.vehicles[selected_vehicle].is_depot_can_be_delivered(selected_depot):
-                continue
+            select_depots = choice(all_depots_to_be_assigned)
 
-            vehicles_with_assigned_depots[selected_vehicle].append(
+
+            # if not self.vehicles[selected_vehicle].is_depot_can_be_delivered(selected_depot):
+            #     continue
+
+            vehicles_with_assigned_depots[selected_vehicle_idx].append(
                 selected_depot)
 
         # use helper function i.e., [0, *route, 0]
@@ -67,35 +78,43 @@ class SolutionGenerator(BuilderFactory):
                 assigned_depots)
 
         return vehicles_with_assigned_depots
-
+    @timer
     def generate_valid_solutions(self, number_of_solutions: int) -> List[SolutionChromosome]:
+        solution_count = 0
         valid_solutions = []
         while (len(valid_solutions) < number_of_solutions):
             solution = self._generate_initial_raw_solution()
             if solution in valid_solutions:
                 continue
-            # e.g. ,[2,1,1]
-            route_status_reponse = self.checker.respond_route_status(
-                solution)
+            solution_count+= 1
+            valid_solutions.append(solution)
+            print(solution_count, valid_solutions)
+            
+            # # e.g. ,[2,1,1]
+            # route_status_reponse = self.checker.respond_route_status(
+            #     solution)
 
-            if RouteStatusCode.FAILED_ROUTE in route_status_reponse:
-                continue
+            # if RouteStatusCode.FAILED_ROUTE in route_status_reponse:
+            #     continue
 
-            if RouteStatusCode.SHORTAGE_ROUTE in route_status_reponse:
-                shortage_vehicle_idx = [vehicle_idx
-                                        for vehicle_idx, response in enumerate(route_status_reponse)
-                                        if response == RouteStatusCode.SHORTAGE_ROUTE]
+            # if RouteStatusCode.SHORTAGE_ROUTE in route_status_reponse:
+            #     shortage_vehicle_idx = [vehicle_idx
+            #                             for vehicle_idx, response in enumerate(route_status_reponse)
+            #                             if response == RouteStatusCode.SHORTAGE_ROUTE]
 
-                for vehicle_idx in shortage_vehicle_idx:
-                    shortage_route = solution[vehicle_idx]
-                    solution[vehicle_idx] = self.optimizer.optimize(
-                        vehicle_idx, shortage_route)
-                    if len(shortage_route) == 0:
-                        continue
-                    # print(shortage_vehicle_idx,
-                    #       route_status_reponse, solution[vehicle_idx])
+            #     for vehicle_idx in shortage_vehicle_idx:
+            #         shortage_route = solution[vehicle_idx]
+            #         solution[vehicle_idx] = self.optimizer.optimize(
+            #             vehicle_idx, shortage_route)
+            #         if len(shortage_route) == 0:
+            #             continue
+            #         # print(shortage_vehicle_idx,
+            #         #       route_status_reponse, solution[vehicle_idx])
 
-            if self.checker.is_valid_solution(solution):
-                valid_solutions.append(solution)
+            # if self.checker.is_valid_solution(solution):
+            #     solution_count += 1
+            #     print(solution_count,solution)
+            #     valid_solutions.append(solution)
 
         return valid_solutions
+    

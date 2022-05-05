@@ -5,4 +5,5 @@ class DepotFile:
         self.demand = f"{BASE_DIR}/d_i.csv"
         self.earilest_time_can_be_delivered = f"{BASE_DIR}/e_i.csv"
         self.latest_time_must_be_delivered = f"{BASE_DIR}/l_i.csv"
+        self.depots_delivery_status = f"{BASE_DIR}/a_ik.csv"
         
