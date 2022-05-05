@@ -1,4 +1,7 @@
 from typing import List, Dict
+from copy import deepcopy
+
+
 class Vehicle:
     def __init__(self,
                  capacity: int,
@@ -18,8 +21,7 @@ class Vehicle:
         fixed_cost: f_ck.csv
         depot_can_be_delivered: a_ik.csv
         '''
-        self._MAXIXMUM_CAPACITY = capacity
-
+        self._MAXIXMUM_CAPACITY = deepcopy(capacity)
         self.capacity = capacity
         self.fuel_fee = fuel_fee
         self.fuel_efficiency = fuel_efficiency
@@ -55,6 +57,9 @@ class Vehicle:
         )
 
     def discharge(self, demand: Dict[str, int]) -> None:
+        if self.is_out_of_stock():
+            raise ValueError("Out of Stock")
+
         for product, demand_quantity in demand.items():
             if product not in self.capacity:
                 raise TypeError(
@@ -62,11 +67,11 @@ class Vehicle:
             self.capacity[product] -= demand_quantity
 
     def replenish(self):
-        self.capacity = self._MAXIXMUM_CAPACITY
+        self.capacity = deepcopy(self._MAXIXMUM_CAPACITY)
 
     def is_out_of_stock(self) -> bool:
         for product in self.capacity:
-            if self.capacity[product] < 0:
+            if self.capacity[product] <= 0:
                 return True
         return False
 

@@ -56,7 +56,6 @@ class Optimizer(BuilderFactory):
 
             if current_depot == shortage_point:
                 break
-        print(vehicle_idx, possible_routes)
         # need to further check if the possible route is actually a SUCCESSFUL_ROUTE
         possible_routes = [(_route, _total_distance)
                            for _route, _total_distance in possible_routes
@@ -64,7 +63,7 @@ class Optimizer(BuilderFactory):
 
         possible_routes.sort(
             key=lambda route_with_distance: route_with_distance[1])
-        print(vehicle_idx, possible_routes)
+        # print(vehicle_idx, possible_routes)
         if len(possible_routes) == 0:
             return []
 

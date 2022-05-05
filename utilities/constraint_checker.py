@@ -22,7 +22,6 @@ class ConstraintChecker(BuilderFactory):
         copy_vehicle = deepcopy(self.vehicles[vehicle_idx])
         warehouse_depot = 0
         for depot_name in route:
-
             current_depot = self.depots[depot_name]
             # product is a dict
             if current_depot.depot_name == warehouse_depot:
