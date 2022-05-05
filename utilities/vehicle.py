@@ -28,9 +28,9 @@ class Vehicle:
         self.fixed_cost = fixed_cost
         self.depots_delivery_status = {depot_name: is_can_be_delivered
                                        for depot_name, is_can_be_delivered in enumerate(depots_delivery_status)}
-        self._available_depots = [status
-                                 for status in self.depots_delivery_status
-                                 if self.depots_delivery_status[status] == 1]
+        self._available_depots = [depot_idx
+                                 for depot_idx,status in self.depots_delivery_status.items()
+                                 if status == 1]
         self._all_depot_names = [
             name for name in self.depots_delivery_status]
         self.vehicle_name = vehicle_name
@@ -49,6 +49,7 @@ class Vehicle:
         fuel_efficiency = f"Fuel Efficiency: {self.fuel_efficiency} l/km\n"
         fixed_cost = f"Fixed Cost: ${self.fixed_cost}\n"
         depots_delivery_status = f"Depots Delivery Status: {self.depots_delivery_status}\n"
+        available_depots = f"Depots Can be Delivered: {self._available_depots}"
         sep = "-" * 60 + "\n"
 
         return "".join(
@@ -56,7 +57,7 @@ class Vehicle:
              fuel_fee,
              fuel_efficiency,
              fixed_cost,
-             depots_delivery_status,
+             available_depots,
              sep]
         )
 

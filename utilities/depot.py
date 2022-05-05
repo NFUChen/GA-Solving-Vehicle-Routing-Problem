@@ -34,6 +34,9 @@ class Depot:
         self._available_vehicles = [
             vehicle_idx for vehicle_idx, status in self._vehicle_depots_delivery_status.items()
             if status == 1]
+    @property
+    def available_vehicles(self) -> List[int]:
+        return self._available_vehicles
         
 
     def __repr__(self) -> str:
@@ -43,7 +46,6 @@ class Depot:
         latest_time_must_be_delivered = f"Latest Time Must Be Delivered: Starting Time after {self.latest_time_must_be_delivered} Mins\n"
         _distance_to_other_depots = f"Distance to Other Depots: {self._distance_to_other_depots}\n"
         _delivery_time_to_other_depots = f"Delivery Time to Other Depots: {self._delivery_time_to_other_depots}\n"
-        _vehicle_depots_delivery_status= f"Vehicle Delivery Status: {self._vehicle_depots_delivery_status}\n"
         _availabe_vehicles = f"Available Vehices: {self._available_vehicles}\n"
         sep = "-" * 60 + "\n"
 
@@ -54,7 +56,6 @@ class Depot:
              latest_time_must_be_delivered,
              _distance_to_other_depots,
              _delivery_time_to_other_depots,
-             _vehicle_depots_delivery_status,
             _availabe_vehicles,
              sep]
         )
