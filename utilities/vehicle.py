@@ -1,5 +1,6 @@
 from typing import List, Dict
 from copy import deepcopy
+from random import choice
 
 
 class Vehicle:
@@ -29,8 +30,8 @@ class Vehicle:
         self.depots_delivery_status = {depot_name: is_can_be_delivered
                                        for depot_name, is_can_be_delivered in enumerate(depots_delivery_status)}
         self._available_depots = [depot_idx
-                                 for depot_idx,status in self.depots_delivery_status.items()
-                                 if status == 1]
+                                  for depot_idx, status in self.depots_delivery_status.items()
+                                  if status == 1]
         self._all_depot_names = [
             name for name in self.depots_delivery_status]
         self.vehicle_name = vehicle_name
@@ -42,14 +43,14 @@ class Vehicle:
     @property
     def available_depots(self) -> List[int]:
         return self._available_depots
-        
+
     def __repr__(self) -> str:
         capacity = f"Capacity: {self.capacity}\n"
         fuel_fee = f"Fuel Fee: ${self.fuel_fee}\n"
         fuel_efficiency = f"Fuel Efficiency: {self.fuel_efficiency} l/km\n"
         fixed_cost = f"Fixed Cost: ${self.fixed_cost}\n"
-        depots_delivery_status = f"Depots Delivery Status: {self.depots_delivery_status}\n"
-        available_depots = f"Depots Can be Delivered: {self._available_depots}"
+        # depots_delivery_status = f"Depots Delivery Status: {self.depots_delivery_status}\n"
+        _available_depots = f"Depots Can be Delivered: {self._available_depots}\n"
         sep = "-" * 60 + "\n"
 
         return "".join(
@@ -57,7 +58,7 @@ class Vehicle:
              fuel_fee,
              fuel_efficiency,
              fixed_cost,
-             available_depots,
+             _available_depots,
              sep]
         )
 
@@ -80,6 +81,9 @@ class Vehicle:
                 return True
         return False
 
+    def _is_valid_depot(self, depot_id: int) -> bool:
+        return depot_id in self._all_depot_names
+
     def is_depot_can_be_delivered(self, depot_id: int) -> bool:
         '''
         P.S. depot_id is 1 based
@@ -91,8 +95,8 @@ class Vehicle:
         # return self.depots_delivery_status[depot_id] == 1
         return depot_id in self._available_depots
 
-    def _is_valid_depot(self, depot_id: int) -> bool:
-        return depot_id in self._all_depot_names
+    def assign_depot(self):
+        return choice(self._available_depots)
 
 
 if __name__ == "__main__":

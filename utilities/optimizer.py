@@ -13,21 +13,33 @@ class Optimizer(BuilderFactory):
         super().__init__()
         self.resource_calc = RouteResourceCalculator()
 
-    def _find_shortage_point_in_route(self, vehicle_idx: int, route: List[int]) -> int:
+    def find_shortage_points_in_route(self, vehicle_idx: int, route: List[int]) -> List[int]:
         '''
         A helper function aiming to find 'shortage point' during delivery,
         returns 'depot_name' not the index of depot
         '''
+        shortage_points = []
         copy_vehicle = deepcopy(self.vehicles[vehicle_idx])
         for depot_name in route:
             current_depot = self.depots[depot_name]
 #             print("Current Capacity", copy_vehicle.capacity)
 #             print("Demand",current_depot.demand)
-
             # product is a dict
             copy_vehicle.discharge(current_depot.demand)
             if copy_vehicle.is_out_of_stock():
-                return depot_name
+                shortage_points.append(depot_name)
+                copy_vehicle.replenish()
+        return shortage_points
+
+    def insert_replenish_points_for_route(self, replenish_points: List[int], route: List[int]) -> List[int]:
+        if len(replenish_points) == 0:
+            return route
+
+        route = route.copy()
+        for point in replenish_points:
+            inserted_idx = route.index(point)
+            route.insert(inserted_idx, 0)
+        return route
 
     def _find_optimal_replenish_point_in_route(self, vehicle_idx: int, route: List[int]) -> List[int]:
         '''

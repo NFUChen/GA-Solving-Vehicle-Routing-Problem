@@ -7,15 +7,16 @@ from .depot import Depot
 class DepotBuilder:
     def __init__(self, file_name: DepotFile) -> None:
         self.depot_distance = pd.read_csv(
-            file_name.distance_to_other_depots, index_col=0)
+            file_name.distance_to_other_depots, index_col=0).applymap(lambda distance: distance / 1000)
         self.depot_time = pd.read_csv(
-            file_name.time_to_other_depots, index_col=0)
-        self.depot_demand = pd.read_csv(file_name.demand, index_col=0)
+            file_name.time_to_other_depots, index_col=0).applymap(lambda time: time / 100)
+        self.depot_demand = pd.read_csv(
+            file_name.demand, index_col=0).applymap(lambda demand: int(demand))
         self.depot_earilest_time_can_be_delivered = pd.read_csv(
             file_name.earilest_time_can_be_delivered)
         self.depot_latest_time_must_be_delivered = pd.read_csv(
             file_name.latest_time_must_be_delivered)
-        
+
         self.vehicle_depots_delivery_status = pd.read_csv(
             file_name.depots_delivery_status, index_col=0).transpose()
 
@@ -39,8 +40,7 @@ class DepotBuilder:
             depot_time = list(self.depot_time.iloc[idx, :])
             vehicle_depots_delivery_status = list(
                 self.vehicle_depots_delivery_status.iloc[idx, :]
-                )
-
+            )
 
             created_depot = Depot(depot_demand,
                                   depot_earilest_time_can_be_delivered,

@@ -73,21 +73,19 @@ class RouteResourceCalculator(BuilderFactory):
         if len(route) == 0:
             return
 
-        route_demand = self._calculate_demand(route)
         route_distance = self._calculate_distance(route)
         route_delivery_time, route_service_time = self._calculate_time(
             vehicle_idx, route)
-
-        vehicle_capacity = self.vehicles[vehicle_idx].capacity
+        fuel_fee = route_delivery_time * self.vehicles[vehicle_idx].fuel_fee
         vehicle_fixed_cost = self.vehicles[vehicle_idx].fixed_cost
 
         time_on_duty_in_minute = route_delivery_time + route_service_time
         driver_cost = self._calculate_driver_cost(168, time_on_duty_in_minute)
 
-        return [route_demand,  # 路徑需求
-                route_distance,  # 路徑距離
-                route_delivery_time,  # 路徑所需運送時間
-                route_service_time,  # 總卸貨時間
-                vehicle_capacity,  # 載具總運載量
-                vehicle_fixed_cost,  # 載具固定成本
-                driver_cost]  # 司機成本
+        return {"fuel_fee": fuel_fee,  # 路徑需求
+                "distance": route_distance,  # 路徑距離
+                "delivery_time": route_delivery_time,  # 路徑所需運送時間
+                "service_time": route_service_time,  # 總卸貨時間
+                # "vehicle_current_capacity"vehicle_capacity,  # 載具總運載量
+                "vehicle_fixed_cost": vehicle_fixed_cost,  # 載具固定成本
+                "driver_cost": driver_cost}  # 司機成本

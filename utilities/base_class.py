@@ -5,7 +5,7 @@ from .vehicle_builder import VehicleBuilder
 
 
 class BuilderFactory:
-    def __init__(self, BASE_DIR: str = "./utilities/dataset/65_22cars/") -> None:
+    def __init__(self, BASE_DIR: str = "./utilities/dataset/9_3cars/") -> None:
         self.depot_files = DepotFile(BASE_DIR)
         self.vehicle_files = VehicleFile(BASE_DIR)
         # self.depots = DepotBuilder(depot_files)

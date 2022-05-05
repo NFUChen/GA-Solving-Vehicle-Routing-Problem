@@ -14,29 +14,28 @@ class ConstraintChecker(BuilderFactory):
         super().__init__()
         self.resource_calc = RouteResourceCalculator()
 
-    # def _is_not_need_to_replenish_during_delivery(self, vehicle_idx: int, route: List[int]) -> bool:
-    #     '''
-    #     A solution checker for checking if a given route should replenish during delivery
-    #     '''
+    def _is_need_to_replenish_during_delivery(self, vehicle_idx: int, route: List[int]) -> bool:
+        '''
+        A solution checker for checking if a given route should replenish during delivery
+        '''
 
-    #     copy_vehicle = deepcopy(self.vehicles[vehicle_idx])
-    #     warehouse_depot = 0
-    #     for depot_name in route[1:-1]: #[0,1,2,3,0] -> [1,2,3]
-    #         current_depot = self.depots[depot_name]
-    #         # product is a dict
-    #         if current_depot.depot_name == warehouse_depot:
-    #             copy_vehicle.replenish()
+        copy_vehicle = deepcopy(self.vehicles[vehicle_idx])
+        warehouse_depot = 0
+        for depot_name in route[1:-1]:  # [0,1,2,3,0] -> [1,2,3]
+            current_depot = self.depots[depot_name]
+            # product is a dict
+            if current_depot.depot_name == warehouse_depot:
+                copy_vehicle.replenish()
 
-    #         copy_vehicle.discharge(current_depot.demand)
-    #         if copy_vehicle.is_out_of_stock():
+            copy_vehicle.discharge(current_depot.demand)
+            if copy_vehicle.is_out_of_stock():
+                return True  # need to replenish
 
-    #             return False  # need to replenish
-
-    #     return True
+        return False
 
     # def _is_replenish_one_time_can_fullfill_route_demand(self, vehicle_idx: int, route: List[int]) -> bool:
     #     '''
-    #     A solution checker for checking if driver replenish one time, 
+    #     A solution checker for checking if driver replenish one time,
     #     total capacity can fullfill the total route demand
     #     '''
     #     route_demand = self.resource_calc._calculate_demand(route)

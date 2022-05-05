@@ -1,4 +1,5 @@
 from typing import List
+from random import choice
 
 
 class Depot:
@@ -34,10 +35,10 @@ class Depot:
         self._available_vehicles = [
             vehicle_idx for vehicle_idx, status in self._vehicle_depots_delivery_status.items()
             if status == 1]
+
     @property
     def available_vehicles(self) -> List[int]:
         return self._available_vehicles
-        
 
     def __repr__(self) -> str:
         depot_name = f"Depot Name: {self.depot_name}\n"
@@ -56,9 +57,12 @@ class Depot:
              latest_time_must_be_delivered,
              _distance_to_other_depots,
              _delivery_time_to_other_depots,
-            _availabe_vehicles,
+             _availabe_vehicles,
              sep]
         )
+
+    def _is_valid_depot(self, depot_id: int) -> bool:
+        return depot_id in self._all_depot_names
 
     def get_distance_to_depot(self, depot_id: str) -> int:
 
@@ -80,5 +84,5 @@ class Depot:
 
         return delivery_time
 
-    def _is_valid_depot(self, depot_id: int) -> bool:
-        return depot_id in self._all_depot_names
+    def assign_vehicles(self):
+        return choice(self._available_vehicles)
