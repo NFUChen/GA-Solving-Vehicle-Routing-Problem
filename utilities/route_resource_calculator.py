@@ -1,5 +1,6 @@
 from typing import Dict, List
-from base_class import BuilderFactory
+from .base_class import BuilderFactory
+
 
 class RouteResourceCalculator(BuilderFactory):
     def __init__(self) -> None:
@@ -12,17 +13,17 @@ class RouteResourceCalculator(BuilderFactory):
         route: storing a path that the input vehicle needs to go through. 
         '''
         super().__init__()
-        
-    def _calculate_demand(self, route:List[int]) -> Dict[str,int]:
+
+    def _calculate_demand(self, route: List[int]) -> Dict[str, int]:
         total_demand = {}
         for depot_id in route:
             for product in self.depots[depot_id].demand.keys():
                 if product not in total_demand:
                     total_demand[product] = 0
-                total_demand[product] +=  self.depots[depot_id].demand[product]
+                total_demand[product] += self.depots[depot_id].demand[product]
         return total_demand
-    
-    def _calculate_distance(self, route:List[int]) -> int:
+
+    def _calculate_distance(self, route: List[int]) -> int:
         '''
         Unit: km
         '''
@@ -30,14 +31,14 @@ class RouteResourceCalculator(BuilderFactory):
         for idx in range(len(route) - 1):
             start_depot = route[idx]
             end_depot = route[idx + 1]
-            
-            distance = self.depots[start_depot].get_distance_to_depot(end_depot)
+
+            distance = self.depots[start_depot].get_distance_to_depot(
+                end_depot)
             total_distance += distance
-        
+
         return total_distance
-    
-    
-    def _calculate_time(self,vehicle_idx:int,route:List[int]) -> List[int]:
+
+    def _calculate_time(self, vehicle_idx: int, route: List[int]) -> List[int]:
         '''
         Unit: minute
         Returns total delivery time and total service time as a list for a given route.
@@ -47,49 +48,46 @@ class RouteResourceCalculator(BuilderFactory):
         for idx in range(len(route) - 1):
             start_depot = route[idx]
             end_depot = route[idx + 1]
-            
-            delivery_time += self.depots[start_depot].get_delivery_time_to_depot(end_depot)
+
+            delivery_time += self.depots[start_depot].get_delivery_time_to_depot(
+                end_depot)
             service_time += self.vehicles[vehicle_idx].shipement_discharging_time
-            
+
         return [delivery_time, service_time]
-    
-    
-    def _calculate_driver_cost(self, hourly_wage:int, time_on_duty_in_minute:int) -> int:
+
+    def _calculate_driver_cost(self, hourly_wage: int, time_on_duty_in_minute: int) -> int:
         '''
         Params:
         total_time_on_duty: minute
         '''
-        
+
         return (time_on_duty_in_minute / 60) * hourly_wage
-    
-    def calculate_route_resources(self, vehicle_idx:int, route:List[int]) -> 'Dict[str, int|Dict[str, int]]':
+
+    def calculate_route_resources(self, vehicle_idx: int, route: List[int]) -> 'Dict[str, int|Dict[str, int]]':
         '''
         This method is a public API expected to expose to users.
         Functionality:
             Calculate total resources needed for 'a given route with a given vehicle'
         '''
-        
+
         if len(route) == 0:
             return
-            
-        
-        
+
         route_demand = self._calculate_demand(route)
         route_distance = self._calculate_distance(route)
-        route_delivery_time, route_service_time = self._calculate_time(vehicle_idx, route)
-        
+        route_delivery_time, route_service_time = self._calculate_time(
+            vehicle_idx, route)
+
         vehicle_capacity = self.vehicles[vehicle_idx].capacity
         vehicle_fixed_cost = self.vehicles[vehicle_idx].fixed_cost
-        
+
         time_on_duty_in_minute = route_delivery_time + route_service_time
         driver_cost = self._calculate_driver_cost(168, time_on_duty_in_minute)
-        
-        
-        return [route_demand, # 路徑需求
-                route_distance, #路徑距離
-                route_delivery_time, #路徑所需運送時間
-                route_service_time, #總卸貨時間
-                vehicle_capacity, #載具總運載量
-                vehicle_fixed_cost,#載具固定成本
-                driver_cost] #司機成本
-    
+
+        return [route_demand,  # 路徑需求
+                route_distance,  # 路徑距離
+                route_delivery_time,  # 路徑所需運送時間
+                route_service_time,  # 總卸貨時間
+                vehicle_capacity,  # 載具總運載量
+                vehicle_fixed_cost,  # 載具固定成本
+                driver_cost]  # 司機成本
