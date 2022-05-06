@@ -90,9 +90,9 @@ class SolutionChromosome(BuilderFactory):
         )
 
         return (
-            self.number_of_vehicles_assigned > _other_solution_chromosome.number_of_vehicles_assigned
-            or self_distance > other_distance
-            or self_time > other_time
+            self.number_of_vehicles_assigned < _other_solution_chromosome.number_of_vehicles_assigned
+            or self_distance < other_distance
+            or self_time < other_time
         )
 
     @ property
