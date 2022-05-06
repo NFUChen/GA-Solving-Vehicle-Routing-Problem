@@ -47,8 +47,8 @@ class SolutionGenerator(BuilderFactory):
 
     def _start_from_warehouse_and_go_back_to_warehouse_helper(self, route: List[int]) -> List[int]:
         '''
-        A helper function for .generate_initial_raw_solution(), 
-        which adds 1 zero at the beginning and at the end of the route, 
+        A helper function for .generate_initial_raw_solution(),
+        which adds 1 zero at the beginning and at the end of the route,
         indicating that the route should be starting from warehouse, and going back to warehouse
         '''
         return [0, *route, 0]
@@ -78,20 +78,25 @@ class SolutionGenerator(BuilderFactory):
             #-----------------------------------------------------------------------#
             #!= 0 需延遲配送的站點
             available_vehicles_for_current_depot = depot.available_vehicles
+
+            is_depot_assigned = False
             for vehicle_idx in available_vehicles_for_current_depot:
                 current_route = vehicles_with_assigned_depots[vehicle_idx]
                 current_depot_idx = depot.depot_name
                 if len(current_route) < 2:
                     continue
-                if self.checker.is_passing_time_window_constraints(
-                        vehicle_idx,
-                        current_route,
-                        current_depot_idx):
+                if self.checker.is_passing_time_window_constraints(vehicle_idx, current_route, current_depot_idx):
+                    # only execute once, once complete appending operation, break current loop
                     vehicles_with_assigned_depots[vehicle_idx].append(
                         current_depot_idx)
+                    is_depot_assigned = True
                     break
-
-                # only execute once, once complete appending operation, break current loop
+            if not is_depot_assigned:
+                print(
+                    f"Depot {depot.depot_name} Is Not Assigned".center(
+                        100, '*')
+                )
+                return
 
         # use helper function i.e., [0, *route, 0]
         for vehicle_idx, assigned_depots in vehicles_with_assigned_depots.items():
@@ -109,7 +114,7 @@ class SolutionGenerator(BuilderFactory):
 
         return vehicles_with_assigned_depots
 
-    @timer
+    @ timer
     def generate_valid_solutions(self, number_of_solutions: int) -> List[SolutionChromosome]:
         solution_count = 0
         total_count = 0
@@ -120,6 +125,9 @@ class SolutionGenerator(BuilderFactory):
             if solution in valid_solutions:
                 print("**Same Answer Generated**")
                 failed_solution_count += 1
+                continue
+            if solution is None:
+                print("**Get None As Solution**")
                 continue
 
             total_count += 1
