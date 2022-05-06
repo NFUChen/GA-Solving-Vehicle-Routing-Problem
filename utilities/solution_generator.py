@@ -38,8 +38,6 @@ class SolutionGenerator(BuilderFactory):
         print(f"Available Depot Names: {self.all_depot_names}")
         self.all_vehicle_names = self.vehicles.all_vehicle_names
         print(f"Available Vehicle Names: {self.all_vehicle_names}")
-        # self.all_depots_to_be_assigned = [
-        #     name for name in self.all_depot_names if name != 0]
         self.sorted_depots_to_be_assigned = self.sorted_depots  # from BuilderFactry
         self.vehicles_with_assigned_depots = {vehicle_name: []
                                               for vehicle_name in self.all_vehicle_names}
@@ -60,35 +58,35 @@ class SolutionGenerator(BuilderFactory):
         P.S. This method generates a solution at least doesn't violate the constraint that an undeliverable depot is assigned to a given vehicle.
 
         '''
-        # [1,2 ...., n], 0(warehouse) should be excluded
+        # [1,2 ...., n], 0 (warehouse) should be excluded
         all_depots_to_be_assigned = deepcopy(self.sorted_depots_to_be_assigned)
 
         vehicles_with_assigned_depots = deepcopy(
             self.vehicles_with_assigned_depots)  # {0:[], 1:[], 2:[] ..., n:[]}
 
         for depot in all_depots_to_be_assigned:
+            #-----------------------------------------------------------------------#
+            # 無需延遲配送的站點, 需當墊背的增取時間
             vehicle_idx_assigned = depot.assign_vehicle()
-            #number_of_current_depots_assignede = len(vehicles_with_assigned_depots[vehicle_idx_assigned])
-            # 無需延遲配送的, 需當墊背的增取時間
             if (depot.earilest_time_can_be_delivered == 0):
                 vehicles_with_assigned_depots[vehicle_idx_assigned].append(
                     depot.depot_name)
                 continue
-
-            #!= 0 需延遲配送的
+            #-----------------------------------------------------------------------#
+            #!= 0 需延遲配送的站點
             available_vehicles_for_current_depot = depot.available_vehicles
-            for vehicle_idx_assigned in available_vehicles_for_current_depot:
-                current_route = vehicles_with_assigned_depots[vehicle_idx_assigned]
+            for vehicle_idx in available_vehicles_for_current_depot:
+                current_route = vehicles_with_assigned_depots[vehicle_idx]
                 current_depot_idx = depot.depot_name
                 if len(current_route) < 2:
                     continue
                 if not self.checker.is_passing_time_window_constraints(
-                        vehicle_idx_assigned,
+                        vehicle_idx,
                         current_route,
                         current_depot_idx):
                     continue
 
-                vehicles_with_assigned_depots[vehicle_idx_assigned].append(
+                vehicles_with_assigned_depots[vehicle_idx].append(
                     current_depot_idx)
                 # only execute once, once complete appending operation, break current loop
                 break
@@ -112,15 +110,27 @@ class SolutionGenerator(BuilderFactory):
     @timer
     def generate_valid_solutions(self, number_of_solutions: int) -> List[SolutionChromosome]:
         solution_count = 0
+        total_count = 0
+        failed_solution_count = 0
         valid_solutions = []
         while (len(valid_solutions) < number_of_solutions):
             solution = self._generate_initial_raw_solution()
             if solution in valid_solutions:
                 continue
+
+            total_count += 1
+            if not self.checker._is_all_depots_servered(solution):
+                # 需延遲運送的站點無法找到可行解
+                print("**Not All Depots Being Servered**")
+                failed_solution_count += 1
+                continue
+
             solution_count += 1
             solution_chromosome = SolutionChromosome(solution)
             valid_solutions.append(solution_chromosome)
 
-            print(f"No. {solution_count}")
-
+            print(f"No. {solution_count} Success")
+        failed_rate = round(failed_solution_count / total_count, 4)
+        print(f"Successful Rate: {(1 - failed_rate) * 100}%")
+        valid_solutions.sort()
         return valid_solutions

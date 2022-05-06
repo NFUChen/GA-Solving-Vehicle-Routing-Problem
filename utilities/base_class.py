@@ -5,7 +5,7 @@ from .vehicle_builder import VehicleBuilder
 
 
 class BuilderFactory:
-    def __init__(self, BASE_DIR: str = "./utilities/dataset/9_3cars/") -> None:
+    def __init__(self, BASE_DIR: str = "./utilities/dataset/65_22cars/") -> None:
         self.depot_files = DepotFile(BASE_DIR)
         self.vehicle_files = VehicleFile(BASE_DIR)
         self.depot_builder = DepotBuilder(self.depot_files)
@@ -22,7 +22,7 @@ class BuilderFactory:
         '''
         sorted_depots_to_be_assigned = sorted([depot
                                                for depot in self.depot_builder._build_depots().values()
-                                               if depot.depot_name != 0])
+                                               if depot.depot_name != 0])  # 0 is warehouse
         return sorted_depots_to_be_assigned
 
     @property

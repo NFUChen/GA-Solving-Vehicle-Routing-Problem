@@ -1,3 +1,4 @@
+from dis import dis
 from typing import Dict, List
 from .base_class import BuilderFactory
 from .route_resource_calculator import RouteResourceCalculator
@@ -47,13 +48,26 @@ class SolutionChromosome(BuilderFactory):
         pass
 
     def __repr__(self) -> str:
-        _repr = (
-            f"Chromosome: {self.chromosome}\n" +
-            f"Number of Vehicles Assigned: {self.resources_used['number_of_vehicles_assigned']}\n"
-            f"Resources Used: {self.resources_used}\n"
-        )
+        chromosome = f"Chromosome: {self.chromosome}"
+        resources = self.resources_used
+        fuel_fee = f"Fuel Fee: ${int(resources['fuel_fee'])}"
+        distance = f"Distance: {int(resources['distance'])} km"
+        total_delivery_time = f"Total Delivery Time: {round(resources['delivery_time'] + resources['service_time'], 2)} Mins"
+        vehicle_fixed_cost = f"Vehicle Fixed Cost: ${int(resources['vehicle_fixed_cost'])}"
+        driver_cost = f"Driver Cost: ${int(resources['driver_cost'])}"
+        number_of_vehicles_assigned = f"Number of Vehicles Assigned: {resources['number_of_vehicles_assigned']}"
+        sep = "-" * 60
+        _repr = [
+            chromosome,
+            fuel_fee, distance,
+            total_delivery_time,
+            vehicle_fixed_cost,
+            driver_cost,
+            number_of_vehicles_assigned,
+            sep
+        ]
 
-        return _repr
+        return "\n\t".join(_repr)
 
     def __gt__(self, _other_solution_chromosome: SolutionChromosome) -> bool:
         # 總配送車數最小化為主要目標，

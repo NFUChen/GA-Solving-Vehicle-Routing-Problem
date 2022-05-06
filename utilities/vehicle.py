@@ -45,15 +45,15 @@ class Vehicle:
         return self._available_depots
 
     def __repr__(self) -> str:
-        capacity = f"Capacity: {self.capacity}\n"
-        fuel_fee = f"Fuel Fee: ${self.fuel_fee}\n"
-        fuel_efficiency = f"Fuel Efficiency: {self.fuel_efficiency} l/km\n"
-        fixed_cost = f"Fixed Cost: ${self.fixed_cost}\n"
+        capacity = f"Capacity: {self.capacity}"
+        fuel_fee = f"Fuel Fee: ${self.fuel_fee}"
+        fuel_efficiency = f"Fuel Efficiency: {self.fuel_efficiency} l/km"
+        fixed_cost = f"Fixed Cost: ${self.fixed_cost}"
         # depots_delivery_status = f"Depots Delivery Status: {self.depots_delivery_status}\n"
-        _available_depots = f"Depots Can be Delivered: {self._available_depots}\n"
-        sep = "-" * 60 + "\n"
+        _available_depots = f"Depots Can be Delivered: {self._available_depots}"
+        sep = "-" * 60
 
-        return "".join(
+        return "\n".join(
             [capacity,
              fuel_fee,
              fuel_efficiency,
