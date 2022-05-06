@@ -72,7 +72,7 @@ class Vehicle:
                     f"Product mismath, Vechicle doesn't have '{product}'")
             self.capacity[product] -= demand_quantity
 
-    def replenish(self):
+    def replenish(self) -> None:
         self.capacity = deepcopy(self._MAXIXMUM_CAPACITY)
 
     def is_out_of_stock(self) -> bool:

@@ -1,4 +1,5 @@
 from .base_class import BuilderFactory
+from .depot_builder import DepotBuilder
 from .solution_generator import SolutionGenerator
 from .constraint_checker import ConstraintChecker
 from .vehicle import Vehicle

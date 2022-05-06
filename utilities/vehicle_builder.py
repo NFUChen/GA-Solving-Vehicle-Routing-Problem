@@ -2,7 +2,6 @@ from typing import Dict, List
 import pandas as pd
 
 from .vehicle_file import VehicleFile
-from .depot import Depot
 from .vehicle import Vehicle
 
 
@@ -19,7 +18,7 @@ class VehicleBuilder:
 
         self._vehicles = self._build_vehicles()
 
-    def _build_vehicles(self) -> Dict[int, Depot]:
+    def _build_vehicles(self) -> Dict[int, Vehicle]:
         '''
         car key is 0-based.
         '''

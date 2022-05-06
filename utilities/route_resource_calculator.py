@@ -48,12 +48,35 @@ class RouteResourceCalculator(BuilderFactory):
         for idx in range(len(route) - 1):
             start_depot = route[idx]
             end_depot = route[idx + 1]
-
+            
             delivery_time += self.depots[start_depot].get_delivery_time_to_depot(
                 end_depot)
             service_time += self.vehicles[vehicle_idx].shipement_discharging_time
 
         return [delivery_time, service_time]
+    
+    def _calculate_time_before_depot_idx(self,vehicle_idx: int, route: List[int], target_depot_idx:int) -> int:
+        if len(route) < 2: #[0]  
+            return 0
+
+
+        delivery_time = 0
+        service_time = 0
+        target_depot_idx = route.index(target_depot_idx)
+        trimmed_route = route[:target_depot_idx + 1]
+
+        for idx in range(len(trimmed_route) - 1):
+            start_depot = route[idx]
+            end_depot = route[idx + 1]
+            if end_depot == target_depot_idx:
+                break
+            #[0, 2,3,4,0], 3
+
+            delivery_time += self.depots[start_depot].get_delivery_time_to_depot(
+                end_depot)
+            service_time += self.vehicles[vehicle_idx].shipement_discharging_time
+        total_time =  delivery_time +service_time
+        return total_time
 
     def _calculate_driver_cost(self, hourly_wage: int, time_on_duty_in_minute: int) -> int:
         '''
