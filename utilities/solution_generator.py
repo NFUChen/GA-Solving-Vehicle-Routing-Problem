@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Union
 from copy import deepcopy
 from time import time
 
@@ -54,7 +54,7 @@ class SolutionGenerator(BuilderFactory):
         return [0, *route, 0]
 
     @timer
-    def _generate_initial_raw_solution(self) -> Solution:
+    def _generate_initial_raw_solution(self) -> 'Solution | int':
         '''
         .generate_initial_raw_solution generates a raw solution that is subject to further check with constraint checker (i.e., ConstraintChecker)
 
@@ -79,7 +79,7 @@ class SolutionGenerator(BuilderFactory):
             #!= 0 需延遲配送的站點
             available_vehicles_for_current_depot = depot.available_vehicles
 
-            is_depot_assigned = False
+            is_delayed_depot_assigned = False
             for vehicle_idx in available_vehicles_for_current_depot:
                 current_route = vehicles_with_assigned_depots[vehicle_idx]
                 current_depot_idx = depot.depot_name
@@ -89,14 +89,10 @@ class SolutionGenerator(BuilderFactory):
                     # only execute once, once complete appending operation, break current loop
                     vehicles_with_assigned_depots[vehicle_idx].append(
                         current_depot_idx)
-                    is_depot_assigned = True
+                    is_delayed_depot_assigned = True
                     break
-            if not is_depot_assigned:
-                print(
-                    f"Depot {depot.depot_name} Is Not Assigned".center(
-                        100, '*')
-                )
-                return
+            if not is_delayed_depot_assigned:
+                return depot.depot_name
 
         # use helper function i.e., [0, *route, 0]
         for vehicle_idx, assigned_depots in vehicles_with_assigned_depots.items():
@@ -114,23 +110,23 @@ class SolutionGenerator(BuilderFactory):
 
         return vehicles_with_assigned_depots
 
-    @ timer
+    @timer
     def generate_valid_solutions(self, number_of_solutions: int) -> List[SolutionChromosome]:
         solution_count = 0
         total_count = 0
         failed_solution_count = 0
         valid_solutions = []
         while len(valid_solutions) < number_of_solutions:
+            total_count += 1
             solution = self._generate_initial_raw_solution()
             if solution in valid_solutions:
                 print("**Same Answer Generated**")
                 failed_solution_count += 1
                 continue
-            if solution is None:
-                print("**Get None As Solution**")
+            if isinstance(solution, int):
+                print(f"**Depot {solution} Is Not Assigned**")
+                failed_solution_count += 1
                 continue
-
-            total_count += 1
             if not self.checker._is_all_depots_servered(solution):
                 # 需延遲運送的站點無法找到可行解
                 print("**Not All Depots Being Servered**")
@@ -138,7 +134,6 @@ class SolutionGenerator(BuilderFactory):
                 continue
 
             solution_count += 1
-
             valid_solutions.append(solution)
 
             print(f"No. {solution_count} Success")
