@@ -95,7 +95,7 @@ class Vehicle:
         # return self.depots_delivery_status[depot_id] == 1
         return depot_id in self._available_depots
 
-    def assign_depot(self):
+    def assign_depot(self) -> int:
         return choice(self._available_depots)
 
 

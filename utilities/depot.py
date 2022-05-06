@@ -84,5 +84,5 @@ class Depot:
 
         return delivery_time
 
-    def assign_vehicles(self):
+    def assign_vehicles(self) -> int:
         return choice(self._available_vehicles)
