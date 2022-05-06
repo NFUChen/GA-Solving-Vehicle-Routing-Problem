@@ -62,14 +62,11 @@ class RouteResourceCalculator(BuilderFactory):
         delivery_time = 0
         service_time = 0
         target_depot_idx = route.index(target_depot_name)
-        print(target_depot_idx)
         trimmed_route = route[:target_depot_idx + 1]
-        print(trimmed_route)
 
         for idx in range(len(trimmed_route) - 1):
             start_depot = route[idx]
             end_depot = route[idx + 1]
-            print(end_depot)
             if end_depot == target_depot_name:
                 break
 
