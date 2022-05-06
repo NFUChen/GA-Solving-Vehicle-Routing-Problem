@@ -2,8 +2,6 @@ from typing import Dict, List
 from copy import deepcopy
 from .base_class import BuilderFactory
 from .route_resource_calculator import RouteResourceCalculator
-from .route_status_code import RouteStatusCode
-
 
 # e.g.,  {0: [], 1: [0, 8, 6, 0], 2: [0, 7, 5, 0], 3: [0, 3, 0], 4: []}
 Solution = Dict[int, List[int]]
@@ -33,45 +31,26 @@ class ConstraintChecker(BuilderFactory):
 
         return False
 
-    # def _is_replenish_one_time_can_fullfill_route_demand(self, vehicle_idx: int, route: List[int]) -> bool:
-    #     '''
-    #     A solution checker for checking if driver replenish one time,
-    #     total capacity can fullfill the total route demand
-    #     '''
-    #     route_demand = self.resource_calc._calculate_demand(route)
-    #     vehicle_max_capacity = self.vehicles[vehicle_idx]._MAXIXMUM_CAPACITY
+    def _is_all_depots_servered(self, solution: Solution) -> bool:
+        all_depots = deepcopy(self.depots.all_depot_names)
 
-    #     for product, demand_quantity in route_demand.items():
-    #         if vehicle_max_capacity[product] * 2 < demand_quantity:
-    #             return False  # replenish one time can't fullfill route demand
+        for route in solution.values():
+            for depot_idx in route:
+                if depot_idx in all_depots:
+                    all_depots.remove(depot_idx)
+        return len(all_depots) == 0
 
-    #     return True
+    def is_passing_time_window_constraints(self, vehicle_idx: int, route: List[int], depot_idx: int) -> bool:
+        route_ending_point = route[-1]
+        time_before_ending_point = self.resource_calc._calculate_time_before_depot_idx(
+            vehicle_idx,
+            route,
+            route_ending_point)
+        current_depot = self.depots[depot_idx]
+        current_vehicle = self.vehicles[vehicle_idx]
+        if (time_before_ending_point < current_depot.earilest_time_can_be_delivered):
+            return False
+        if (time_before_ending_point > current_vehicle.maximum_available_time):
+            return False
 
-    # def respond_route_status(self, solution: Solution) -> List[RouteStatusCode]:
-    #     status_codes = []
-    #     for vehicle_idx, route in solution.items():
-    #         if self._is_not_need_to_replenish_during_delivery(vehicle_idx, route):
-    #             status_codes.append(RouteStatusCode.SUCCESSFUL_ROUTE)
-    #             continue
-    #         if self._is_replenish_one_time_can_fullfill_route_demand(vehicle_idx, route):
-    #             status_codes.append(RouteStatusCode.SHORTAGE_ROUTE)
-    #             continue
-
-    #         status_codes.append(RouteStatusCode.FAILED_ROUTE)
-    #     return status_codes
-
-    # def _is_not_all_depots_servered(self, solution: Solution) -> bool:
-    #     all_depots = deepcopy(self.depots.all_depot_names)
-
-    #     for route in solution.values():
-    #         for depot_idx in route:
-    #             if depot_idx in all_depots:
-    #                 all_depots.remove(depot_idx)
-    #     return len(all_depots) != 0
-
-    # def is_valid_solution(self, solution: Solution) -> bool:
-
-    #     if self._is_not_all_depots_servered(solution):
-    #         return False
-
-    #     return True
+        return True

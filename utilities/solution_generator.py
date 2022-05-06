@@ -1,6 +1,5 @@
-from copy import deepcopy
 from typing import List, Dict
-# from random import choice
+from copy import deepcopy
 from time import time
 from .base_class import BuilderFactory
 from .constraint_checker import ConstraintChecker
@@ -41,7 +40,7 @@ class SolutionGenerator(BuilderFactory):
         print(f"Available Vehicle Names: {self.all_vehicle_names}")
         # self.all_depots_to_be_assigned = [
         #     name for name in self.all_depot_names if name != 0]
-        self.sorted_depots_to_be_assigned = self.sorted_depots # from BuilderFactry
+        self.sorted_depots_to_be_assigned = self.sorted_depots  # from BuilderFactry
         self.vehicles_with_assigned_depots = {vehicle_name: []
                                               for vehicle_name in self.all_vehicle_names}
 
@@ -63,7 +62,6 @@ class SolutionGenerator(BuilderFactory):
         '''
         # [1,2 ...., n], 0(warehouse) should be excluded
         all_depots_to_be_assigned = deepcopy(self.sorted_depots_to_be_assigned)
-        average_depot_each_vehicle_should_be_assigned = len(self.sorted_depots) // len(self.all_vehicle_names)
 
         vehicles_with_assigned_depots = deepcopy(
             self.vehicles_with_assigned_depots)  # {0:[], 1:[], 2:[] ..., n:[]}
@@ -73,50 +71,27 @@ class SolutionGenerator(BuilderFactory):
             #number_of_current_depots_assignede = len(vehicles_with_assigned_depots[vehicle_idx_assigned])
             # 無需延遲配送的, 需當墊背的增取時間
             if (depot.earilest_time_can_be_delivered == 0):
-                vehicles_with_assigned_depots[vehicle_idx_assigned].append(depot.depot_name)
+                vehicles_with_assigned_depots[vehicle_idx_assigned].append(
+                    depot.depot_name)
                 continue
 
-            
             #!= 0 需延遲配送的
-            if (depot.earilest_time_can_be_delivered > 0):
-                print("--------------------------------------------------")
-                print(depot.depot_name,depot.earilest_time_can_be_delivered)
-                print("--------------------------------------------------")
+            available_vehicles_for_current_depot = depot.available_vehicles
+            for vehicle_idx_assigned in available_vehicles_for_current_depot:
+                current_route = vehicles_with_assigned_depots[vehicle_idx_assigned]
+                current_depot_idx = depot.depot_name
+                if len(current_route) < 2:
+                    continue
+                if not self.checker.is_passing_time_window_constraints(
+                        vehicle_idx_assigned,
+                        current_route,
+                        current_depot_idx):
+                    continue
 
-                available_vehicles_for_current_depot = depot.available_vehicles
-                for vehicle_idx_assigned in available_vehicles_for_current_depot:
-                    # vehicle_idx_assigned = depot.assign_vehicle()
-                    # number_of_assigned_depots = len(vehicles_with_assigned_depots[vehicle_idx_assigned])
-                    current_route = vehicles_with_assigned_depots[vehicle_idx_assigned]
-                    if len(current_route) < 2:
-                        continue
-                    if depot.depot_name in current_route:
-                        continue
-
-                    current_route_ending_point = current_route[-1]
-                    print(current_route, current_route_ending_point)
-                    time_before_ending_point = self.resource_calc._calculate_time_before_depot_idx(
-                        vehicle_idx_assigned, 
-                        current_route, 
-                        current_route_ending_point)
-
-                    if (time_before_ending_point < depot.earilest_time_can_be_delivered):
-                        continue
-
-                    # if (number_of_assigned_depots < average_depot_each_vehicle_should_be_assigned + 2): #找到路徑較長的車
-                    #     continue
-                    vehicles_with_assigned_depots[vehicle_idx_assigned].append(depot.depot_name)
-                    # only execute once, once complete appending operation, break curren loop
-                    break
-    
-            
-                    
-            
-
-
-            
-            
-
+                vehicles_with_assigned_depots[vehicle_idx_assigned].append(
+                    current_depot_idx)
+                # only execute once, once complete appending operation, break current loop
+                break
 
         # use helper function i.e., [0, *route, 0]
         for vehicle_idx, assigned_depots in vehicles_with_assigned_depots.items():

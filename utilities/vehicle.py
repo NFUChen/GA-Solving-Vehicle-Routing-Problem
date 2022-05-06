@@ -97,13 +97,3 @@ class Vehicle:
 
     def assign_depot(self) -> int:
         return choice(self._available_depots)
-
-
-if __name__ == "__main__":
-    vehicle1 = Vehicle(capacity=150,
-                       fuel_fee=24,
-                       fuel_efficiency=0.1,
-                       fixed_cost=1000,
-                       depots_delivery_status=[0, 1, 1, 1, 1, 1, 1, 1, 1])
-
-    print(vehicle1.is_depot_can_be_delivered())

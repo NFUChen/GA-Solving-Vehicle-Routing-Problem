@@ -1,6 +1,5 @@
 from typing import Dict, List
 import pandas as pd
-
 from .vehicle_file import VehicleFile
 from .vehicle import Vehicle
 

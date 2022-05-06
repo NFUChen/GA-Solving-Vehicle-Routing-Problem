@@ -17,8 +17,9 @@ class SolutionChromosome(BuilderFactory):
         self.resources_used = self._calculate_solution_resources(
             solution)
 
+        self.number_of_vehicles_assigned = self.resources_used["number_of_vehicles_assigned"]
 
-    def _calculate_solution_resources(self, solution: Solution) -> List[Dict[str, float]]:
+    def _calculate_solution_resources(self, solution: Solution) -> Dict[str, float]:
         total_resources = {}
         for vehicle_idx, route in solution.items():
             resources = self.resource_calc.calculate_route_resources(
@@ -31,9 +32,10 @@ class SolutionChromosome(BuilderFactory):
                 if resource not in total_resources:
                     total_resources[resource] = 0
                 total_resources[resource] += amount
-    
-        total_resources["number_of_vehicles_assigned"] = len(self.each_route_resource)
-        
+
+        total_resources["number_of_vehicles_assigned"] = len(
+            self.each_route_resource)
+
         return total_resources
 
     def mutate(self, mutation_rate) -> SolutionChromosome:
