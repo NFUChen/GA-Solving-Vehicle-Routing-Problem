@@ -51,15 +51,12 @@ class ConstraintChecker(BuilderFactory):
             route_ending_point)
 
         if (time_before_ending_point < current_depot.earilest_time_can_be_delivered):
-            print("earilest_time_can_be_delivered")
             return False
 
         if (time_before_ending_point > current_depot.latest_time_must_be_delivered):
-            print("latest_time_must_be_delivered")
             return False
 
         if (time_before_ending_point > current_vehicle.maximum_available_time):
-            print("maximum_available_time")
             return False
 
         return True
