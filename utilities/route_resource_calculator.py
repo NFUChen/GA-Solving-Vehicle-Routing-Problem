@@ -55,19 +55,22 @@ class RouteResourceCalculator(BuilderFactory):
 
         return [delivery_time, service_time]
 
-    def _calculate_time_before_depot_idx(self, vehicle_idx: int, route: List[int], target_depot_idx: int) -> int:
+    def _calculate_time_before_depot_idx(self, vehicle_idx: int, route: List[int], target_depot_name: int) -> int:
         if len(route) < 2:  # [0]
             return 0
 
         delivery_time = 0
         service_time = 0
-        target_depot_idx = route.index(target_depot_idx)
+        target_depot_idx = route.index(target_depot_name)
+        print(target_depot_idx)
         trimmed_route = route[:target_depot_idx + 1]
+        print(trimmed_route)
 
         for idx in range(len(trimmed_route) - 1):
             start_depot = route[idx]
             end_depot = route[idx + 1]
-            if end_depot == target_depot_idx:
+            print(end_depot)
+            if end_depot == target_depot_name:
                 break
 
             delivery_time += self.depots[start_depot].get_delivery_time_to_depot(

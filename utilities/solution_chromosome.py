@@ -69,6 +69,9 @@ class SolutionChromosome(BuilderFactory):
 
         return "\n\t".join(_repr)
 
+    def __eq__(self, _other_solution_chromosome: SolutionChromosome) -> bool:
+        return self.solution == _other_solution_chromosome.solution
+
     def __gt__(self, _other_solution_chromosome: SolutionChromosome) -> bool:
         # 總配送車數最小化為主要目標，
         # 降低總配送距離與減少每趟次的花費時間為次要目標，

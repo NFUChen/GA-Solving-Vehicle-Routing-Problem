@@ -1,11 +1,14 @@
 from typing import List, Dict
 from copy import deepcopy
 from time import time
+
+from click import progressbar
 from .base_class import BuilderFactory
 from .constraint_checker import ConstraintChecker
 from .route_resource_calculator import RouteResourceCalculator
 from .optimizer import Optimizer
 from .solution_chromosome import SolutionChromosome
+from tqdm import tqdm
 
 # e.g.,  {0: [], 1: [0, 8, 6, 0], 2: [0, 7, 5, 0], 3: [0, 3, 0], 4: []}
 Solution = Dict[int, List[int]]
@@ -80,16 +83,15 @@ class SolutionGenerator(BuilderFactory):
                 current_depot_idx = depot.depot_name
                 if len(current_route) < 2:
                     continue
-                if not self.checker.is_passing_time_window_constraints(
+                if self.checker.is_passing_time_window_constraints(
                         vehicle_idx,
                         current_route,
                         current_depot_idx):
-                    continue
+                    vehicles_with_assigned_depots[vehicle_idx].append(
+                        current_depot_idx)
+                    break
 
-                vehicles_with_assigned_depots[vehicle_idx].append(
-                    current_depot_idx)
                 # only execute once, once complete appending operation, break current loop
-                break
 
         # use helper function i.e., [0, *route, 0]
         for vehicle_idx, assigned_depots in vehicles_with_assigned_depots.items():
@@ -113,9 +115,11 @@ class SolutionGenerator(BuilderFactory):
         total_count = 0
         failed_solution_count = 0
         valid_solutions = []
-        while (len(valid_solutions) < number_of_solutions):
+        while len(valid_solutions) < number_of_solutions:
             solution = self._generate_initial_raw_solution()
             if solution in valid_solutions:
+                print("**Same Answer Generated**")
+                failed_solution_count += 1
                 continue
 
             total_count += 1
@@ -126,11 +130,18 @@ class SolutionGenerator(BuilderFactory):
                 continue
 
             solution_count += 1
-            solution_chromosome = SolutionChromosome(solution)
-            valid_solutions.append(solution_chromosome)
+
+            valid_solutions.append(solution)
 
             print(f"No. {solution_count} Success")
-        failed_rate = round(failed_solution_count / total_count, 4)
-        print(f"Successful Rate: {(1 - failed_rate) * 100}%")
-        valid_solutions.sort()
-        return valid_solutions
+        failed_rate = failed_solution_count / total_count
+        print(f"Successful Rate: {round((1 - failed_rate), 4) * 100}%")
+
+        valid_solution_chromosomes = []
+        print("Processing Solution Chromosomes...")
+        # tqdm for progress tqdm(iterable)
+        for solution in tqdm(valid_solutions):
+            valid_solution_chromosomes.append(SolutionChromosome(solution))
+        valid_solution_chromosomes.sort()
+
+        return valid_solution_chromosomes
