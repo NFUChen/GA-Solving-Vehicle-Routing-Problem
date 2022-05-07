@@ -40,23 +40,6 @@ class RouteResourceCalculator(BuilderFactory):
 
         return total_distance
 
-    def _calculate_time(self, vehicle_idx: int, route: List[int]) -> List[int]:
-        '''
-        Unit: minute
-        Returns total delivery time and total service time as a list for a given route.
-        '''
-        delivery_time = 0
-        service_time = 0
-        for idx in range(len(route) - 1):
-            start_depot = route[idx]
-            end_depot = route[idx + 1]
-
-            delivery_time += self.depots[start_depot].get_delivery_time_to_depot(
-                end_depot)
-            service_time += self.vehicles[vehicle_idx].shipement_discharging_time
-
-        return [delivery_time, service_time]
-
     def _calculate_time_for_current_route(self, vehicle_idx: int, route: List[int]) -> int:
         if len(route) < 2:  # [0]
             return 0
@@ -110,6 +93,11 @@ class RouteResourceCalculator(BuilderFactory):
         return route_info_dict
 
     def calculate_solution_resources(self, solusion: Solution) -> Dict[str, 'float | int']:
+        '''
+        This method is a public API expected to expose to users.
+        Functionality:
+            Calculate total resources needed for 'a given solution'
+        '''
 
         route_info_dict = self._get_all_route_info_as_dict(
             solusion)  # {0: [(0, 7)]
@@ -155,8 +143,8 @@ class RouteResourceCalculator(BuilderFactory):
         if len(route) == 0:
             return
 
-        solution = {vehicle_idx: route}
+        mock_solution = {vehicle_idx: route}
 
-        resources = self.calculate_solution_resources(solution)
+        resources = self.calculate_solution_resources(mock_solution)
 
         return resources
