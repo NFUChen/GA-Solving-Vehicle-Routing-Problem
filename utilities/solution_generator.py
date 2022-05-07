@@ -128,11 +128,6 @@ class SolutionGenerator(BuilderFactory):
                 print(f"**Depot {solution} Is Not Assigned**")
                 failed_solution_count += 1
                 continue
-            if not self.checker._is_all_depots_servered(solution):
-                # 需延遲運送的站點無法找到可行解
-                print("**Not All Depots Being Servered**")
-                failed_solution_count += 1
-                continue
 
             solution_count += 1
             valid_solutions.append(solution)

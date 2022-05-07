@@ -27,7 +27,8 @@ class SolutionChromosome(BuilderFactory):
             self.resources_used = resources_used
             return
 
-        self.resources_used = self._calculate_solution_resources(solution)
+        self.resources_used = self.resource_calc.calculate_solution_resources(
+            solution)
 
     def mutate(self, mutation_rate) -> SolutionChromosome:
         random_value = random()
@@ -106,20 +107,3 @@ class SolutionChromosome(BuilderFactory):
     def _create_next_generation_self_with_new_solusion(self, new_solusion: Solution) -> SolutionChromosome:
         # passing in self.resources_used is for performance concern, which avoidss duplicate computation.
         return SolutionChromosome(new_solusion, self.immutable_depot_names, self.resources_used, self.generation + 1)
-
-    def _calculate_solution_resources(self, solution: Solution) -> Dict[str, float]:
-        total_resources = {}
-        total_resources["number_of_vehicles_assigned"] = len(solution)
-        for vehicle_idx, route in solution.items():
-            resources = self.resource_calc.calculate_route_resources(
-                vehicle_idx, route)
-            if resources is None:  # e.g., {0: []} -> None
-                total_resources["number_of_vehicles_assigned"] -= 1
-                continue
-
-            for resource, amount in resources.items():
-                if resource not in total_resources:
-                    total_resources[resource] = 0
-                total_resources[resource] += amount
-
-        return total_resources
