@@ -40,21 +40,21 @@ class ConstraintChecker(BuilderFactory):
                     all_depots.remove(depot_idx)
         return len(all_depots) == 0
 
-    def is_passing_time_window_constraints(self, vehicle_idx: int, route: List[int], depot_idx: int) -> bool:
-        current_depot = self.depots[depot_idx]
+    def is_passing_time_window_constraints(self, vehicle_idx: int, route: List[int], checking_depot_idx: int) -> bool:
+        checking_depot = self.depots[checking_depot_idx]
         current_vehicle = self.vehicles[vehicle_idx]
 
-        current_route_delivery_time = self.resource_calc._calculate_time_for_current_route(
+        total_time_before_checking_depot_idx = self.resource_calc._calculate_time_before_depot_idx(
             vehicle_idx,
-            route)
+            route, checking_depot)
 
-        if (current_route_delivery_time < current_depot.earilest_time_can_be_delivered):
+        if (total_time_before_checking_depot_idx < checking_depot.earilest_time_can_be_delivered):
             return False
 
-        if (current_route_delivery_time > current_depot.latest_time_must_be_delivered):
+        if (total_time_before_checking_depot_idx > checking_depot.latest_time_must_be_delivered):
             return False
 
-        if (current_route_delivery_time > current_vehicle.maximum_available_time):
+        if (total_time_before_checking_depot_idx > current_vehicle.maximum_available_time):
             return False
 
         return True
