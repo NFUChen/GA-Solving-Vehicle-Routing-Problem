@@ -22,9 +22,9 @@ class DepotBuilder:
 
         self._number_of_depots = len(self.depot_demand)
 
-        self._depots = self._build_depots()
+        self._depots = self.build_depots()
 
-    def _build_depots(self) -> Dict[int, Depot]:
+    def build_depots(self) -> Dict[int, Depot]:
         '''
         depot key is 0-based.
         '''
@@ -52,6 +52,16 @@ class DepotBuilder:
             depots[depot_name] = created_depot
 
         return depots
+
+    @property
+    def all_depot_names_with_time_window_constraint(self) -> List[int]:
+        return [
+            depot_idx
+            for depot_idx, depot in self.build_depots().items()
+            if (depot.earilest_time_can_be_delivered != 0)
+            or (depot.latest_time_must_be_delivered != 420)
+            or (depot.depot_name == 0)
+        ]
 
     @property
     def all_depot_names(self) -> List[int]:

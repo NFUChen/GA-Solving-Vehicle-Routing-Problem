@@ -42,6 +42,7 @@ class SolutionGenerator(BuilderFactory):
         self.all_vehicle_names = self.vehicles.all_vehicle_names
         print(f"Available Vehicle Names: {self.all_vehicle_names}")
         self.sorted_depots_to_be_assigned = self.sorted_depots  # from BuilderFactry
+        self.all_depot_names_with_time_window_constraints = self.depot_builder.all_depot_names_with_time_window_constraint
         self.vehicles_with_assigned_depots = {vehicle_name: []
                                               for vehicle_name in self.all_vehicle_names}
 
@@ -139,12 +140,13 @@ class SolutionGenerator(BuilderFactory):
             print(f"No. {solution_count} Success")
         failed_rate = failed_solution_count / total_count
         print(f"Successful Rate: {round((1 - failed_rate), 4) * 100}%")
-
         valid_solution_chromosomes = []
         print("Processing Solution Chromosomes...")
         # tqdm for progress tqdm(iterable)
+
         for solution in tqdm(valid_solutions):
-            valid_solution_chromosomes.append(SolutionChromosome(solution))
+            valid_solution_chromosomes.append(
+                SolutionChromosome(solution, self.all_depot_names_with_time_window_constraints))
         valid_solution_chromosomes.sort()
 
         return valid_solution_chromosomes

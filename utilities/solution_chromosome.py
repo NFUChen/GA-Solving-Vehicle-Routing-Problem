@@ -1,7 +1,8 @@
-from dis import dis
 from typing import Dict, List
+from random import random
 from .base_class import BuilderFactory
 from .route_resource_calculator import RouteResourceCalculator
+from .mutation_strategy import MutationStrategy
 # e.g.,  {0: [], 1: [0, 8, 6, 0], 2: [0, 7, 5, 0], 3: [0, 3, 0], 4: []}
 Solution = Dict[int, List[int]]
 
@@ -11,8 +12,11 @@ class SolutionChromosome:
 
 
 class SolutionChromosome(BuilderFactory):
-    def __init__(self, solution: Solution, generation: int = 0) -> None:
+    def __init__(self, solution: Solution, immutable_depot_names: List[int], generation: int = 0) -> None:
         self.chromosome = solution
+        self.immutable_depot_names = immutable_depot_names
+        self.generation = generation
+
         self.resource_calc = RouteResourceCalculator()
         self.each_route_resource = [].copy()
         self.resources_used = self._calculate_solution_resources(
@@ -40,8 +44,11 @@ class SolutionChromosome(BuilderFactory):
         return total_resources
 
     def mutate(self, mutation_rate) -> SolutionChromosome:
-        pass
+        random_value = random()
+        if random_value < mutation_rate:
+            return self
 
+        strategy_func = MutationStrategy.choose_mutation_strategy()
         return self
 
     def crossover(self, _other_solution_chromosome: SolutionChromosome) -> List[SolutionChromosome]:
