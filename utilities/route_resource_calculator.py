@@ -67,13 +67,13 @@ class RouteResourceCalculator(BuilderFactory):
         for idx in range(len(route) - 1):
             start_depot = route[idx]
             end_depot = route[idx + 1]
-            if end_depot == target_depot_name:
-                break
-
             delivery_time += self.depots[start_depot].get_delivery_time_to_depot(
                 end_depot)
             service_time += self.vehicles[vehicle_idx].shipement_discharging_time
+            if end_depot == target_depot_name:
+                break
         total_time = delivery_time + service_time
+
         return total_time
 
     def _calculate_driver_cost(self, hourly_wage: int, time_on_duty_in_minute: int) -> int:
@@ -95,6 +95,10 @@ class RouteResourceCalculator(BuilderFactory):
                 route_info_dict[vehicle_idx] = []
 
             for idx in range(len(route)-1):
+                start_depot = route[idx]
+                end_depot = route[idx + 1]
+                regular_route_info = (start_depot, end_depot)
+                route_info_dict[vehicle_idx].append(regular_route_info)
                 if idx < len(route) - 2:
                     check_start_depot = route[idx]
                     check_warehouse_depot = route[idx + 1]
@@ -104,11 +108,6 @@ class RouteResourceCalculator(BuilderFactory):
                     replenish_route_info = (
                         check_start_depot, check_warehouse_depot, check_end_depot)
                     route_info_dict[vehicle_idx].append(replenish_route_info)
-
-                start_depot = route[idx]
-                end_depot = route[idx + 1]
-                regular_route_info = (start_depot, end_depot)
-                route_info_dict[vehicle_idx].append(regular_route_info)
         return route_info_dict
 
     def calculate_solution_resources(self, solusion: Solution) -> Dict[str, 'float | int']:
