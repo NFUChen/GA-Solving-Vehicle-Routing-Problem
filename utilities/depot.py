@@ -1,7 +1,10 @@
 from typing import List
 from random import choice
+
+
 class Depot:
     pass
+
 
 class Depot:
     def __init__(self,
@@ -40,22 +43,15 @@ class Depot:
     @property
     def available_vehicles(self) -> List[int]:
         return self._available_vehicles
-    
+
     def __gt__(self, _other_depot: Depot) -> bool:
-        
+
+        # 要提早送的
         if self.latest_time_must_be_delivered > _other_depot.latest_time_must_be_delivered:
-            '''
-            要提早送的
-            '''
             return 1
-
+        # 需延遲運送的
         if self.earilest_time_can_be_delivered > _other_depot.earilest_time_can_be_delivered:
-            '''
-            需延遲運送的
-            '''
             return -1
-        
-
 
         return 0
 

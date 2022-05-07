@@ -12,50 +12,37 @@ class SolutionChromosome:
 
 
 class SolutionChromosome(BuilderFactory):
-    def __init__(self, solution: Solution, immutable_depot_names: List[int], generation: int = 0) -> None:
-        self.chromosome = solution
+    def __init__(self,
+                 solution: Solution,
+                 immutable_depot_names: List[int],
+                 resources_used: Dict[str, float] = None,
+                 generation: int = 0, ) -> None:
+        self.solusion = solution
         self.immutable_depot_names = immutable_depot_names
+        self.mutation_strategy = MutationStrategy(immutable_depot_names)
         self.generation = generation
-
         self.resource_calc = RouteResourceCalculator()
-        self.each_route_resource = [].copy()
-        self.resources_used = self._calculate_solution_resources(
-            solution)
 
-        self.number_of_vehicles_assigned = self.resources_used["number_of_vehicles_assigned"]
+        if resources_used is not None:
+            self.resources_used = resources_used
+            return
 
-    def _calculate_solution_resources(self, solution: Solution) -> Dict[str, float]:
-        total_resources = {}
-        for vehicle_idx, route in solution.items():
-            resources = self.resource_calc.calculate_route_resources(
-                vehicle_idx, route)
-            if resources is None:
-                continue
-            self.each_route_resource.append(resources)
-
-            for resource, amount in resources.items():
-                if resource not in total_resources:
-                    total_resources[resource] = 0
-                total_resources[resource] += amount
-
-        total_resources["number_of_vehicles_assigned"] = len(
-            self.each_route_resource)
-
-        return total_resources
+        self.resources_used = self._calculate_solution_resources(solution)
 
     def mutate(self, mutation_rate) -> SolutionChromosome:
         random_value = random()
         if random_value < mutation_rate:
             return self
+        strategy_func = self.mutation_strategy.choose_mutation_strategy()
 
-        strategy_func = MutationStrategy.choose_mutation_strategy()
+        # after mutation, update chromosome e.g., self.resources_used = new_resource
         return self
 
     def crossover(self, _other_solution_chromosome: SolutionChromosome) -> List[SolutionChromosome]:
         pass
 
     def __repr__(self) -> str:
-        chromosome = f"Chromosome: {self.chromosome}"
+        chromosome = f"Chromosome: {self.solusion}"
         resources = self.resources_used
 
         fuel_fee = f"Fuel Fee: ${int(resources['fuel_fee'])}"
@@ -84,7 +71,7 @@ class SolutionChromosome(BuilderFactory):
         return "\n\t".join(_repr)
 
     def __eq__(self, _other_solution_chromosome: SolutionChromosome) -> bool:
-        return self.solution == _other_solution_chromosome.solution
+        return self.solusion == _other_solution_chromosome.solusion
 
     def __gt__(self, _other_solution_chromosome: SolutionChromosome) -> bool:
         # 總配送車數最小化為主要目標，
@@ -106,6 +93,33 @@ class SolutionChromosome(BuilderFactory):
 
         return self_total_cost < other_total_cost
 
-    @ property
-    def fitness(self):
-        pass
+    @property
+    def fitness(self) -> float:
+        resources = self.resources_used
+        total_cost = (
+            resources["fuel_fee"] +
+            resources["vehicle_fixed_cost"] +
+            resources["driver_cost"]
+        )
+        return 1 / total_cost
+
+    def _create_next_generation_self_with_new_solusion(self, new_solusion: Solution) -> SolutionChromosome:
+        # passing in self.resources_used is for performance concern, which avoidss duplicate computation.
+        return SolutionChromosome(new_solusion, self.immutable_depot_names, self.resources_used, self.generation + 1)
+
+    def _calculate_solution_resources(self, solution: Solution) -> Dict[str, float]:
+        total_resources = {}
+        total_resources["number_of_vehicles_assigned"] = len(solution)
+        for vehicle_idx, route in solution.items():
+            resources = self.resource_calc.calculate_route_resources(
+                vehicle_idx, route)
+            if resources is None:  # e.g., {0: []} -> None
+                total_resources["number_of_vehicles_assigned"] -= 1
+                continue
+
+            for resource, amount in resources.items():
+                if resource not in total_resources:
+                    total_resources[resource] = 0
+                total_resources[resource] += amount
+
+        return total_resources
