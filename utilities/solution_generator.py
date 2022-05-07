@@ -38,13 +38,17 @@ class SolutionGenerator(BuilderFactory):
         self.resource_calc = RouteResourceCalculator()
 
         self.all_depot_names = self.depots.all_depot_names
-        print(f"Available Depot Names: {self.all_depot_names}")
         self.all_vehicle_names = self.vehicles.all_vehicle_names
-        print(f"Available Vehicle Names: {self.all_vehicle_names}")
         self.sorted_depots_to_be_assigned = self.sorted_depots  # from BuilderFactry
         self.all_depot_names_with_time_window_constraints = self.depot_builder.all_depot_names_with_time_window_constraint
         self.vehicles_with_assigned_depots = {vehicle_name: []
                                               for vehicle_name in self.all_vehicle_names}
+        
+        
+        print(f"Available Vehicle Names: {self.all_vehicle_names}")
+        print(f"Available Depot Names: {self.all_depot_names}")
+        print(
+            f"All Depots With Time Window Constraints: {self.all_depot_names_with_time_window_constraints}")
 
     def _start_from_warehouse_and_go_back_to_warehouse_helper(self, route: List[int]) -> List[int]:
         '''

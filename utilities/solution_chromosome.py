@@ -55,6 +55,7 @@ class SolutionChromosome(BuilderFactory):
             resources['fuel_fee']) + resources['vehicle_fixed_cost'] + int(resources['driver_cost'])
         total_cost = f"Total Cost: ${total_cost_amount}"
         number_of_vehicles_assigned = f"Number of Vehicles Assigned: {resources['number_of_vehicles_assigned']}"
+        number_of_replenishment = f"Number of Replenishsments: {resources['number_of_replenishment']}"
         sep = "-" * 60
 
         _repr = [
@@ -66,6 +67,7 @@ class SolutionChromosome(BuilderFactory):
             distance,
             total_delivery_time,
             number_of_vehicles_assigned,
+            number_of_replenishment,
             sep
         ]
 

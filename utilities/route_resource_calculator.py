@@ -57,20 +57,16 @@ class RouteResourceCalculator(BuilderFactory):
 
         return [delivery_time, service_time]
 
-    def _calculate_time_before_depot_idx(self, vehicle_idx: int, route: List[int], target_depot_name: int) -> int:
+    def _calculate_time_for_current_route(self, vehicle_idx: int, route: List[int]) -> int:
         if len(route) < 2:  # [0]
             return 0
 
         delivery_time = 0
         service_time = 0
-        target_depot_idx = route.index(target_depot_name)
-        trimmed_route = route[:target_depot_idx + 1]
 
-        for idx in range(len(trimmed_route) - 1):
+        for idx in range(len(route) - 1):
             start_depot = route[idx]
             end_depot = route[idx + 1]
-            if end_depot == target_depot_name:
-                break
 
             delivery_time += self.depots[start_depot].get_delivery_time_to_depot(
                 end_depot)
@@ -85,16 +81,6 @@ class RouteResourceCalculator(BuilderFactory):
         '''
 
         return (time_on_duty_in_minute / 60) * hourly_wage
-
-    def _calculate_number_of_replenishments(self, route: List[int]) -> int:
-        trimmed_route = route[1:-1]  # [0,1,2,3,0] -> [1,2,3]
-        total_number_of_replenishments = 0
-        warehose_depot = 0
-        for depot in trimmed_route:
-            if depot == warehose_depot:
-                total_number_of_replenishments += 1
-
-        return total_number_of_replenishments
 
     # {0: [(0, 7)]
 
@@ -150,14 +136,14 @@ class RouteResourceCalculator(BuilderFactory):
         time_on_duty_in_minute = total_delivery_time + total_service_time
         driver_cost = self._calculate_driver_cost(168, time_on_duty_in_minute)
 
-        return {"fuel_fee": fuel_fee,  # 路徑需求
-                "distance": total_distance,  # 路徑距離
-                "delivery_time": total_delivery_time,  # 路徑所需運送時間
+        return {"fuel_fee": fuel_fee,
+                "distance": total_distance,
+                "delivery_time": total_delivery_time,
                 "service_time": total_service_time,  # 總卸貨時間
-                "vehicle_fixed_cost": vehicle_fixed_cost,  # 載具固定成本
-                "driver_cost": driver_cost,  # 司機成本
+                "vehicle_fixed_cost": vehicle_fixed_cost,
+                "driver_cost": driver_cost,
                 "number_of_replenishment": number_of_replenishments,
-                "number_of_vehicles_assigned": number_of_vehicles_assigned}  # 總派送車輛
+                "number_of_vehicles_assigned": number_of_vehicles_assigned}
 
     def calculate_route_resources(self, vehicle_idx: int, route: List[int]) -> Dict[str, 'float | int']:
         '''
