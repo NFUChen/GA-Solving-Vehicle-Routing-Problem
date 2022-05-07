@@ -1,5 +1,5 @@
 from typing import Dict, List
-from random import random
+from random import random, choice
 from .base_class import BuilderFactory
 from .route_resource_calculator import RouteResourceCalculator
 from .mutation_strategy import MutationStrategy
@@ -18,6 +18,11 @@ class SolutionChromosome(BuilderFactory):
                  resources_used: Dict[str, float] = None,
                  generation: int = 0, ) -> None:
         self.solusion = solution
+        # dont' choose vehicle without any depots being assigned, or len(route) < 3, [0,1,0] -> will cause mutation error,
+        # mutation strategy need to pick two 'DIFFERENT' route index and that it shouldn't be 0
+        self.vehicles_can_be_chosen = [vehicle
+                                       for vehicle, route in self.solusion.items()
+                                       if len(route) > 3]
         self.immutable_depot_names = immutable_depot_names
         self.mutation_strategy = MutationStrategy(immutable_depot_names)
         self.generation = generation
@@ -30,16 +35,28 @@ class SolutionChromosome(BuilderFactory):
         self.resources_used = self.resource_calc.calculate_solution_resources(
             solution)
 
-    def mutate(self, mutation_rate) -> SolutionChromosome:
+    def mutate(self, mutation_rate: float) -> SolutionChromosome:
         random_value = random()
-        if random_value < mutation_rate:
+        if random_value > mutation_rate:
             return self
-        strategy_func = self.mutation_strategy.choose_mutation_strategy()
 
-        # after mutation, update chromosome e.g., self.resources_used = new_resource
+        mutation_func = self.mutation_strategy.randomly_choose_mutation_strategy()
+
+        chosen_vehicle_idx = self._randomly_choose_a_vehicle()
+        chosen_vehicle_route = self.solusion[chosen_vehicle_idx]
+        mutated_route = mutation_func(chosen_vehicle_route)
+
+        # after mutation, update chromosome fitness ( based on self.resources_used, and self.solusion)
+        self._update_resources_used(chosen_vehicle_idx, mutated_route)
+        self.solusion[chosen_vehicle_idx] = mutated_route
+
+        print("Mutate: ", mutation_func.__name__)
+        print(chosen_vehicle_idx, chosen_vehicle_route)
+        print(mutated_route)
+
         return self
 
-    def crossover(self, _other_solution_chromosome: SolutionChromosome) -> List[SolutionChromosome]:
+    def crossover(self, _other_solution_chromosome: SolutionChromosome, crossover_rate: float) -> List[SolutionChromosome]:
         pass
 
     def __repr__(self) -> str:
@@ -74,27 +91,15 @@ class SolutionChromosome(BuilderFactory):
         return "\n\t".join(_repr)
 
     def __eq__(self, _other_solution_chromosome: SolutionChromosome) -> bool:
-        return self.solusion == _other_solution_chromosome.solusion
+        return self.fitness == _other_solution_chromosome.fitness
 
     def __gt__(self, _other_solution_chromosome: SolutionChromosome) -> bool:
         # 總配送車數最小化為主要目標，
         # 降低總配送距離與減少每趟次的花費時間為次要目標，
         # 以求取最佳的配送路線。所以目標函數(1)為最小化車輛的固定成本、
         # 車輛行駛的距離成本、每趟次花費的司機員薪資成本。
-        self_resources = self.resources_used
-        other_resources = _other_solution_chromosome.resources_used
 
-        self_fuel_fee = self_resources['fuel_fee']
-        self_driver_cost = self_resources['driver_cost']
-        self_vehicle_fixed_cost = self_resources['vehicle_fixed_cost']
-        self_total_cost = self_fuel_fee + self_driver_cost + self_vehicle_fixed_cost
-
-        other_fuel_fee = other_resources['fuel_fee']
-        other_driver_cost = other_resources['driver_cost']
-        other_vehicle_fixed_cost = other_resources['vehicle_fixed_cost']
-        other_total_cost = other_fuel_fee + other_driver_cost + other_vehicle_fixed_cost
-
-        return self_total_cost < other_total_cost
+        return self.fitness > _other_solution_chromosome.fitness
 
     @property
     def fitness(self) -> float:
@@ -109,3 +114,23 @@ class SolutionChromosome(BuilderFactory):
     def _create_next_generation_self_with_new_solusion(self, new_solusion: Solution) -> SolutionChromosome:
         # passing in self.resources_used is for performance concern, which avoidss duplicate computation.
         return SolutionChromosome(new_solusion, self.immutable_depot_names, self.resources_used, self.generation + 1)
+
+    def _randomly_choose_a_vehicle(self) -> int:
+
+        return choice(self.vehicles_can_be_chosen)
+
+    def _update_resources_used(self, vehicle_idx: int, updated_route: List[int]) -> None:
+        '''
+        After mutation, make sure we update chromosome 
+        (e.g., self.resources_used, self.chromosome)
+        '''
+
+        original_route_resources = self.resource_calc.calculate_route_resources(
+            vehicle_idx, self.solusion[vehicle_idx])
+        updated_route_resources = self.resource_calc.calculate_route_resources(
+            vehicle_idx, updated_route
+        )
+
+        for resource in self.resources_used.keys():
+            self.resources_used[resource] -= original_route_resources[resource]
+            self.resources_used[resource] += updated_route_resources[resource]

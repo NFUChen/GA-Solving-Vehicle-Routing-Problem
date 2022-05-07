@@ -96,7 +96,7 @@ class RouteResourceCalculator(BuilderFactory):
         '''
         This method is a public API expected to expose to users.
         Functionality:
-            Calculate total resources needed for 'a given solution'
+            Calculate total resources needed for 'a given solusion'
         '''
 
         route_info_dict = self._get_all_route_info_as_dict(
