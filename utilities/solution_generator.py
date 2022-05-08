@@ -103,12 +103,12 @@ class SolutionGenerator(BuilderFactory):
             if len(assigned_depots) == 0:  # if assigned route is a empty list
                 continue
 
-            route = self._start_from_warehouse_and_go_back_to_warehouse_helper(
+            shortage_route = self._start_from_warehouse_and_go_back_to_warehouse_helper(
                 assigned_depots)
-            shortage_points = self.optimizer.find_shortage_points_in_route(
-                vehicle_idx, route)
-            non_shortage_route = self.optimizer.insert_replenish_points_for_route(
-                shortage_points, route)
+            shortage_points = self.optimizer.find_shortage_points_in_route_helper(
+                vehicle_idx, shortage_route)
+            non_shortage_route = self.optimizer.insert_replenish_points_for_route_helper(
+                shortage_points, shortage_route)
 
             vehicles_with_assigned_depots[vehicle_idx] = non_shortage_route
 

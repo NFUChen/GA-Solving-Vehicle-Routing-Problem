@@ -13,7 +13,7 @@ class Optimizer(BuilderFactory):
         super().__init__()
         self.resource_calc = RouteResourceCalculator()
 
-    def find_shortage_points_in_route(self, vehicle_idx: int, route: List[int]) -> List[int]:
+    def find_shortage_points_in_route_helper(self, vehicle_idx: int, route: List[int]) -> List[int]:
         '''
         A helper function aiming to find 'shortage point' during delivery,
         returns 'depot_name' not the index of depot
@@ -31,7 +31,7 @@ class Optimizer(BuilderFactory):
                 copy_vehicle.replenish()
         return shortage_points
 
-    def insert_replenish_points_for_route(self, replenish_points: List[int], route: List[int]) -> List[int]:
+    def insert_replenish_points_for_route_helper(self, replenish_points: List[int], route: List[int]) -> List[int]:
         if len(replenish_points) == 0:
             return route
 
