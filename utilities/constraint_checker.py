@@ -45,8 +45,13 @@ class ConstraintChecker(BuilderFactory):
         current_vehicle = self.vehicles[vehicle_idx]  # Vehicle class
 
         total_time_of_current_route = self.resource_calc._calculate_time_for_current_route(
-            vehicle_idx, temp_assinged_route)
+            vehicle_idx, [*temp_assinged_route, checking_depot_idx])
         # print(total_time_of_current_route)
+
+        if (total_time_of_current_route > current_vehicle.maximum_available_time):
+
+            # print("maximum_available_time")
+            return False
 
         if (total_time_of_current_route < checking_depot.earilest_time_can_be_delivered):
             # print("earilest_time_can_be_delivered")
@@ -54,10 +59,6 @@ class ConstraintChecker(BuilderFactory):
 
         if (total_time_of_current_route > checking_depot.latest_time_must_be_delivered):
             # print("latest_time_must_be_delivered")
-            return False
-
-        if (total_time_of_current_route > current_vehicle.maximum_available_time):
-            # print("maximum_available_time")
             return False
 
         return True
@@ -68,7 +69,9 @@ class ConstraintChecker(BuilderFactory):
             checking_depot_route_idx = route.index(
                 checking_depot_idx)  # e.g., [1,2,3] 2 -> 1
             route_before_check_depot_idx = route[:checking_depot_route_idx]
-            if not self.is_passing_time_window_constraints(vehicle_idx, route_before_check_depot_idx, checking_depot_idx):
+            if not self.is_passing_time_window_constraints(vehicle_idx,
+                                                           route_before_check_depot_idx,  # 到達站
+                                                           checking_depot_idx):
                 return False
 
         return True
