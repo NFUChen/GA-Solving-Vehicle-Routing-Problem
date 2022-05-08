@@ -84,6 +84,10 @@ class ConstraintChecker(BuilderFactory):
         checking_depot = self.depots[checking_depot_idx]  # Depot class
         current_vehicle = self.vehicles[vehicle_idx]  # Vehicle class
         warehose_depot = 0
+
+        if checking_depot.depot_name not in self.depot_builder.all_depot_names_with_time_window_constraint:
+            return True
+
         # For time window constraints, we need to consider two factors.
         # (1) The delivery time starting from warehouse and going back to warehouse.
         # (2) If there exist replenishments during delivery (which we need to insert it if needed).
@@ -125,6 +129,8 @@ class ConstraintChecker(BuilderFactory):
                 checking_depot_idx)  # e.g., [1,2,3] 2 -> 1
             route_before_check_depot_idx = route_without_warehouse_depot[:checking_depot_route_idx]
             if len(route_before_check_depot_idx) < 2:
+                continue
+            if checking_depot_idx not in self.depot_builder.all_depot_names_with_time_window_constraint:
                 continue
             # before puting route into is_passing_time_window_constraints,
             # it needs to processed such that [0,1,2,3,0,4,5,0] -> [1,2,3,4,5],

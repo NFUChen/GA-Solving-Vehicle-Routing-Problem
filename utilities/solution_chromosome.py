@@ -127,7 +127,7 @@ class SolutionChromosome(BuilderFactory):
     def _update_resources_used(self, vehicle_idx: int, updated_route: List[int]) -> None:
         '''
         After mutation, make sure we update chromosome 
-        (e.g., self.resources_used, self.chromosome)
+        (e.g., self.resources_used, self.solusion)
         '''
 
         original_route_resources = self.resource_calc.calculate_route_resources(
