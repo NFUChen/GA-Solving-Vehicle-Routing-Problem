@@ -81,12 +81,13 @@ class ConstraintChecker(BuilderFactory):
     # ----------------------------------------------------------------------------------------------------------------
 
     def is_passing_time_window_constraints(self, vehicle_idx: int, temp_assinged_route: List[int], checking_depot_idx: int) -> bool:
+
         checking_depot = self.depots[checking_depot_idx]  # Depot class
         current_vehicle = self.vehicles[vehicle_idx]  # Vehicle class
         warehose_depot = 0
 
         shortage_route = self._start_from_warehouse_and_go_back_to_warehouse_helper(
-            [*temp_assinged_route, checking_depot_idx])
+            [*temp_assinged_route, checking_depot_idx])  # [*[1,2], 3] -> [0,1,2,3,0]
         shortage_points = self._find_shortage_points_in_route_helper(
             vehicle_idx, shortage_route)
         non_shortage_route = self._insert_replenish_points_for_route_helper(
@@ -116,10 +117,18 @@ class ConstraintChecker(BuilderFactory):
 
     def is_all_depots_passing_time_window_constraints(self, vehicle_idx: int, route: List[int]):
         # [0,1,2,3,0] -> [1,2,3] is_passing_time_window_constraints will take care of inserting warehose
-        for checking_depot_idx in route[1:-1]:
+        route_without_warehouse_depot = [
+            depot_idx for depot_idx in route if depot_idx != 0]
+
+        for checking_depot_idx in route_without_warehouse_depot:
             checking_depot_route_idx = route.index(
                 checking_depot_idx)  # e.g., [1,2,3] 2 -> 1
             route_before_check_depot_idx = route[:checking_depot_route_idx]
+            if len(route_before_check_depot_idx) < 2:
+                continue
+            # before puting route into is_passing_time_window_constraints,
+            # it needs to processed such that [0,1,2,3,0,4,5,0] -> [1,2,3,4,5],
+            # since when it pass into the cheker function, it will be processed back to what it was i.e., [0,1,2,3,0,4,5,0]
             if not self.is_passing_time_window_constraints(vehicle_idx,
                                                            route_before_check_depot_idx,  # 到達站
                                                            checking_depot_idx):
