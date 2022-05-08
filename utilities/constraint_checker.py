@@ -85,7 +85,9 @@ class ConstraintChecker(BuilderFactory):
         checking_depot = self.depots[checking_depot_idx]  # Depot class
         current_vehicle = self.vehicles[vehicle_idx]  # Vehicle class
         warehose_depot = 0
-
+        # For time window constraints, we need to consider two factors.
+        # (1) The delivery time starting from warehouse and going back to warehouse.
+        # (2) If there exist replenishments during delivery (which we need to insert it if needed).
         shortage_route = self._start_from_warehouse_and_go_back_to_warehouse_helper(
             [*temp_assinged_route, checking_depot_idx])  # [*[1,2], 3] -> [0,1,2,3,0]
         shortage_points = self._find_shortage_points_in_route_helper(
@@ -96,21 +98,19 @@ class ConstraintChecker(BuilderFactory):
             vehicle_idx, non_shortage_route)
 
         if (total_time_of_completing_route > current_vehicle.maximum_available_time):
-
-            # print("maximum_available_time")
             return False
 
-        # only consider delivery time to final depot (warehose depot), so not including shipment discharging time
+        # the calculating process below is for performance concern, which is helpful for avoiding duplicate computation
+        # i.e., take the total time just computed above, and minus the checking depot to final destination (warehouse).
         total_time_before_arriving_checking_depot_idx = (total_time_of_completing_route -
                                                          checking_depot.get_delivery_time_to_depot(warehose_depot))
+        # only consider delivery time to final depot (warehose depot), so not including shipment discharging time
         total_time_before_arriving_checking_depot_idx -= current_vehicle.shipement_discharging_time
 
         if (total_time_before_arriving_checking_depot_idx < checking_depot.earilest_time_can_be_delivered):
-            # print("earilest_time_can_be_delivered")
             return False
 
         if (total_time_before_arriving_checking_depot_idx > checking_depot.latest_time_must_be_delivered):
-            # print("latest_time_must_be_delivered")
             return False
 
         return True
@@ -121,16 +121,17 @@ class ConstraintChecker(BuilderFactory):
             depot_idx for depot_idx in route if depot_idx != 0]
 
         for checking_depot_idx in route_without_warehouse_depot:
-            checking_depot_route_idx = route.index(
+            checking_depot_route_idx = route_without_warehouse_depot.index(
                 checking_depot_idx)  # e.g., [1,2,3] 2 -> 1
-            route_before_check_depot_idx = route[:checking_depot_route_idx]
+            route_before_check_depot_idx = route_without_warehouse_depot[:checking_depot_route_idx]
             if len(route_before_check_depot_idx) < 2:
                 continue
             # before puting route into is_passing_time_window_constraints,
             # it needs to processed such that [0,1,2,3,0,4,5,0] -> [1,2,3,4,5],
-            # since when it pass into the cheker function, it will be processed back to what it was i.e., [0,1,2,3,0,4,5,0]
+            # since when it is passed into the cheker function,
+            # it will be processed back to what it was i.e., [0,1,2,3,0,4,5,0]
             if not self.is_passing_time_window_constraints(vehicle_idx,
-                                                           route_before_check_depot_idx,  # 到達站
+                                                           route_before_check_depot_idx,
                                                            checking_depot_idx):
                 return False
 
