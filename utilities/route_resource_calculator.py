@@ -70,8 +70,10 @@ class RouteResourceCalculator(BuilderFactory):
             delivery_time += self.depots[start_depot].get_delivery_time_to_depot(
                 end_depot)
             service_time += self.vehicles[vehicle_idx].shipement_discharging_time
-            if end_depot == target_depot_name:
+            # print(start_depot, end_depot, target_depot_name)
+            if start_depot == target_depot_name:
                 break
+
         total_time = delivery_time + service_time
 
         return total_time

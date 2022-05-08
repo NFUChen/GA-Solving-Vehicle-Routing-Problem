@@ -46,15 +46,27 @@ class ConstraintChecker(BuilderFactory):
 
         total_time_before_checking_depot_idx = self.resource_calc._calculate_time_before_depot_idx(
             vehicle_idx,
-            route, checking_depot)
+            route, checking_depot.depot_name)
+        # print(total_time_before_checking_depot_idx)
 
         if (total_time_before_checking_depot_idx < checking_depot.earilest_time_can_be_delivered):
+            # print("earilest_time_can_be_delivered")
             return False
 
         if (total_time_before_checking_depot_idx > checking_depot.latest_time_must_be_delivered):
+            # print("latest_time_must_be_delivered")
             return False
 
         if (total_time_before_checking_depot_idx > current_vehicle.maximum_available_time):
+            # print("maximum_available_time")
             return False
+
+        return True
+
+    def is_all_depot_passing_time_window_constraints(self, vehicle_idx: int, route: List[int]):
+        checking_route = route[:-1]
+        for checking_depot_idx in checking_route:
+            if not self.is_passing_time_window_constraints(vehicle_idx, route, checking_depot_idx):
+                return False
 
         return True

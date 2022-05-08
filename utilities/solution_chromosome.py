@@ -3,6 +3,7 @@ from random import random, choice
 from .base_class import BuilderFactory
 from .route_resource_calculator import RouteResourceCalculator
 from .mutation_strategy import MutationStrategy
+from .constraint_checker import ConstraintChecker
 # e.g.,  {0: [], 1: [0, 8, 6, 0], 2: [0, 7, 5, 0], 3: [0, 3, 0], 4: []}
 Solution = Dict[int, List[int]]
 
@@ -27,6 +28,7 @@ class SolutionChromosome(BuilderFactory):
         self.mutation_strategy = MutationStrategy(immutable_depot_names)
         self.generation = generation
         self.resource_calc = RouteResourceCalculator()
+        self.checker = ConstraintChecker()
 
         if resources_used is not None:
             self.resources_used = resources_used
@@ -50,9 +52,9 @@ class SolutionChromosome(BuilderFactory):
         self._update_resources_used(chosen_vehicle_idx, mutated_route)
         self.solusion[chosen_vehicle_idx] = mutated_route
 
-        print("Mutate: ", mutation_func.__name__)
-        print(chosen_vehicle_idx, chosen_vehicle_route)
-        print(mutated_route)
+        # print("Mutate: ", mutation_func.__name__)
+        # print(chosen_vehicle_idx, chosen_vehicle_route)
+        # print(mutated_route)
 
         return self
 
