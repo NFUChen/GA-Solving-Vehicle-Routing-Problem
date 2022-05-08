@@ -7,3 +7,6 @@ from .vehicle_builder import VehicleBuilder
 from .route_resource_calculator import RouteResourceCalculator
 from .optimizer import Optimizer
 from .solution_chromosome import SolutionChromosome
+
+
+from .genetic_algorithm import GeneticAlgorithm

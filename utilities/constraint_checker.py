@@ -40,12 +40,13 @@ class ConstraintChecker(BuilderFactory):
                     all_depots.remove(depot_idx)
         return len(all_depots) == 0
 
-    def is_passing_time_window_constraints(self, vehicle_idx: int, route: List[int], checking_depot_idx: int) -> bool:
-        checking_depot = self.depots[checking_depot_idx]
-        current_vehicle = self.vehicles[vehicle_idx]
+    def is_passing_time_window_constraints(self, vehicle_idx: int, temp_assinged_route: List[int], checking_depot_idx: int) -> bool:
+        checking_depot = self.depots[checking_depot_idx]  # Depot class
+        current_vehicle = self.vehicles[vehicle_idx]  # Vehicle class
 
         total_time_of_current_route = self.resource_calc._calculate_time_for_current_route(
-            vehicle_idx, route)
+            vehicle_idx, temp_assinged_route)
+        # print(total_time_of_current_route)
 
         if (total_time_of_current_route < checking_depot.earilest_time_can_be_delivered):
             # print("earilest_time_can_be_delivered")
@@ -62,9 +63,12 @@ class ConstraintChecker(BuilderFactory):
         return True
 
     def is_all_depot_passing_time_window_constraints(self, vehicle_idx: int, route: List[int]):
-        checking_route = route[:-1]
-        for checking_depot_idx in checking_route:
-            if not self.is_passing_time_window_constraints(vehicle_idx, route, checking_depot_idx):
+        # checking_route = route[:-1]
+        for checking_depot_idx in route:
+            checking_depot_route_idx = route.index(
+                checking_depot_idx)  # e.g., [1,2,3] 2 -> 1
+            route_before_check_depot_idx = route[:checking_depot_route_idx]
+            if not self.is_passing_time_window_constraints(vehicle_idx, route_before_check_depot_idx, checking_depot_idx):
                 return False
 
         return True
