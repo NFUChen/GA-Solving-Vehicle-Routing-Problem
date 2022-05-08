@@ -89,7 +89,6 @@ class SolutionGenerator(BuilderFactory):
                 current_depot_idx = depot.depot_name
                 if len(current_route) < 2:
                     continue
-                # 須考慮最後一站是否符合時窗
                 if self.checker.is_passing_time_window_constraints(vehicle_idx, current_route, current_depot_idx):
                     # only execute once, once complete appending operation, break current loop
                     vehicles_with_assigned_depots[vehicle_idx].append(

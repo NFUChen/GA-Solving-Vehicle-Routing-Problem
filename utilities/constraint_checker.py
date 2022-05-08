@@ -2,6 +2,8 @@ from typing import Dict, List
 from copy import deepcopy
 from .base_class import BuilderFactory
 from .route_resource_calculator import RouteResourceCalculator
+# for procssing route (e.g., inserting replenish point and warehose depot)
+# from .solution_generator import SolutionGenerator
 
 # e.g.,  {0: [], 1: [0, 8, 6, 0], 2: [0, 7, 5, 0], 3: [0, 3, 0], 4: []}
 Solution = Dict[int, List[int]]
@@ -11,6 +13,7 @@ class ConstraintChecker(BuilderFactory):
     def __init__(self) -> None:
         super().__init__()
         self.resource_calc = RouteResourceCalculator()
+        # self.generator = SolutionGenerator()
 
     def _is_need_to_replenish_during_delivery(self, vehicle_idx: int, route: List[int]) -> bool:
         '''
@@ -44,6 +47,13 @@ class ConstraintChecker(BuilderFactory):
         checking_depot = self.depots[checking_depot_idx]  # Depot class
         current_vehicle = self.vehicles[vehicle_idx]  # Vehicle class
         warehose_depot = 0
+
+        # route = self.generator._start_from_warehouse_and_go_back_to_warehouse_helper(
+        #     assigned_depots)
+        # shortage_points = self.optimizer.find_shortage_points_in_route(
+        #     vehicle_idx, route)
+        # non_shortage_route = self.optimizer.insert_replenish_points_for_route(
+        #     shortage_points, route)
 
         total_time_of_completing_route = self.resource_calc._calculate_time_for_current_route(
             vehicle_idx, [warehose_depot, *temp_assinged_route, checking_depot_idx, warehose_depot])

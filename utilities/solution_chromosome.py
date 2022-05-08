@@ -18,15 +18,13 @@ class SolutionChromosome(BuilderFactory):
                  resources_used: Dict[str, float] = None,
                  generation: int = 0, ) -> None:
         self.solusion = solution
+
         # dont' choose vehicle without any depots being assigned, or len(route) < 3, [0,1,0] -> will cause mutation error,
         # mutation strategy need to pick two 'DIFFERENT' route index and that it shouldn't be 0
-        self.vehicles_can_be_chosen = [vehicle
-                                       for vehicle, route in self.solusion.items()
-                                       if len(route) > 3]
-        self.immutable_depot_names = immutable_depot_names
         self.mutation_strategy = MutationStrategy(immutable_depot_names)
-        self.generation = generation
         self.resource_calc = RouteResourceCalculator()
+        self.immutable_depot_names = immutable_depot_names
+        self.generation = generation
 
         if resources_used is not None:
             self.resources_used = resources_used
@@ -34,6 +32,13 @@ class SolutionChromosome(BuilderFactory):
 
         self.resources_used = self.resource_calc.calculate_solution_resources(
             solution)
+
+        self._vehicle_mutaion_and_crossover_dict = self._filter_vehicle_can_be_chosen_for_mutation_and_crossover()
+
+        self.vehicles_can_be_chosen_for_mutation = self._vehicle_mutaion_and_crossover_dict[
+            "mutation"]
+        self.vehicles_can_be_chosen_for_crossover = self._vehicle_mutaion_and_crossover_dict[
+            "crossover"]
 
     def mutate(self, mutation_rate: float) -> SolutionChromosome:
         random_value = random()
@@ -117,7 +122,7 @@ class SolutionChromosome(BuilderFactory):
 
     def _randomly_choose_a_vehicle(self) -> int:
 
-        return choice(self.vehicles_can_be_chosen)
+        return choice(self.vehicles_can_be_chosen_for_mutation)
 
     def _update_resources_used(self, vehicle_idx: int, updated_route: List[int]) -> None:
         '''
@@ -134,3 +139,37 @@ class SolutionChromosome(BuilderFactory):
         for resource in self.resources_used.keys():
             self.resources_used[resource] -= original_route_resources[resource]
             self.resources_used[resource] += updated_route_resources[resource]
+
+    def _is_route_contains_immutable_depots(self, route: List[int]) -> bool:
+        if len(route) == 0:
+            return False
+
+        for depot in route[1:-1]:  # [0,1,2,3,0] -> [1,2,3]
+            if depot in self.immutable_depot_names:
+                return True
+        return False
+
+    def _filter_vehicle_can_be_chosen_for_mutation_and_crossover(self) -> Dict[str, List[int]]:
+        vehicle_mutaion_and_crossover_dict = {}
+        vehicle_mutaion_and_crossover_dict["mutation"] = [].copy()
+        vehicle_mutaion_and_crossover_dict["crossover"] = [].copy()
+        for vehicle_idx, route in self.solusion.items():
+
+            if len(route) == 0:
+                continue
+            if len(route) > 3:
+                vehicle_mutaion_and_crossover_dict["mutation"].append(
+                    vehicle_idx)
+
+            if not self._is_route_contains_immutable_depots(route):
+                vehicle_mutaion_and_crossover_dict["crossover"].append(
+                    vehicle_idx)
+
+        return vehicle_mutaion_and_crossover_dict
+
+    def _is_route_contains_immutable_depots(self, route):
+        route_without_warehouse_depot = route[1:-1]
+        for depot in route_without_warehouse_depot:
+            if depot in self.immutable_depot_names:
+                return True
+        return False

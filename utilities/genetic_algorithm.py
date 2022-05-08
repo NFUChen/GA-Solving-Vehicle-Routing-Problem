@@ -1,6 +1,7 @@
 from .solution_generator import SolutionGenerator
 from random import random
 from copy import deepcopy
+import numpy as np
 
 
 class GeneticAlgorithm:
@@ -10,16 +11,31 @@ class GeneticAlgorithm:
                  maximum_iteration) -> None:
         self.population_size = population_size
         self.population = None
-        self.mutation = mutation_rate
-        self.crossover_rate = crossover_rate
-
-        self.global_best_route = None
-        self.current_best_route = None
 
         self.current_iteration = 0
         self.maximum_iteration = maximum_iteration
 
+        self.global_best_route = None
+        self.current_best_route = None
+
         self.solution_generator = SolutionGenerator()
+
+        self.max_mutation_rate = mutation_rate
+        self.max_crossover_rate = crossover_rate
+
+        self.mutation_rate_lookup = np.linspace(
+            self.max_mutation_rate, 0, self.maximum_iteration)
+
+        self.crossover_rate_lookup = np.linspace(
+            0, self.max_crossover_rate, self.maximum_iteration)
+
+    @property
+    def current_level_mutation_rate(self) -> float:
+        return self.mutation_rate_lookup[self.current_iteration]
+
+    @property
+    def current_level_crossover_rate(self) -> float:
+        return self.crossover_rate_lookup[self.current_iteration]
 
     def _generate_initial_population(self) -> None:
         initial_half_population = self.solution_generator.generate_valid_solutions(
