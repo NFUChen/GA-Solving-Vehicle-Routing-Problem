@@ -56,7 +56,7 @@ class GeneticAlgorithm:
             check_sum += self.population[selected_idx].fitness
             selected_idx += 1
 
-        return self.population[selected_idx]
+        return self.population[selected_idx - 1]
 
     def _crossover_two_parents(self) -> None:
         '''

@@ -43,29 +43,36 @@ class ConstraintChecker(BuilderFactory):
     def is_passing_time_window_constraints(self, vehicle_idx: int, temp_assinged_route: List[int], checking_depot_idx: int) -> bool:
         checking_depot = self.depots[checking_depot_idx]  # Depot class
         current_vehicle = self.vehicles[vehicle_idx]  # Vehicle class
+        warehose_depot = 0
 
-        total_time_of_current_route = self.resource_calc._calculate_time_for_current_route(
-            vehicle_idx, [*temp_assinged_route, checking_depot_idx])
+        total_time_of_completing_route = self.resource_calc._calculate_time_for_current_route(
+            vehicle_idx, [warehose_depot, *temp_assinged_route, checking_depot_idx, warehose_depot])
         # print(total_time_of_current_route)
+        #
 
-        if (total_time_of_current_route > current_vehicle.maximum_available_time):
+        if (total_time_of_completing_route > current_vehicle.maximum_available_time):
 
             # print("maximum_available_time")
             return False
 
-        if (total_time_of_current_route < checking_depot.earilest_time_can_be_delivered):
+        # only consider delivery time to final depot (warehose depot), so not including shipment discharging time
+        total_time_of_before_arriving_checking_depot_idx = (total_time_of_completing_route -
+                                                            checking_depot.get_delivery_time_to_depot(warehose_depot))
+        total_time_of_before_arriving_checking_depot_idx -= current_vehicle.shipement_discharging_time
+
+        if (total_time_of_before_arriving_checking_depot_idx < checking_depot.earilest_time_can_be_delivered):
             # print("earilest_time_can_be_delivered")
             return False
 
-        if (total_time_of_current_route > checking_depot.latest_time_must_be_delivered):
+        if (total_time_of_before_arriving_checking_depot_idx > checking_depot.latest_time_must_be_delivered):
             # print("latest_time_must_be_delivered")
             return False
 
         return True
 
-    def is_all_depot_passing_time_window_constraints(self, vehicle_idx: int, route: List[int]):
-        # checking_route = route[:-1]
-        for checking_depot_idx in route:
+    def is_all_depots_passing_time_window_constraints(self, vehicle_idx: int, route: List[int]):
+        # [0,1,2,3,0] -> [1,2,3] is_passing_time_window_constraints will take care of inserting warehose
+        for checking_depot_idx in route[1:-1]:
             checking_depot_route_idx = route.index(
                 checking_depot_idx)  # e.g., [1,2,3] 2 -> 1
             route_before_check_depot_idx = route[:checking_depot_route_idx]

@@ -148,6 +148,7 @@ class RouteResourceCalculator(BuilderFactory):
                 "distance": total_distance,
                 "delivery_time": total_delivery_time,
                 "service_time": total_service_time,  # 總卸貨時間
+                "total_time": time_on_duty_in_minute,
                 "vehicle_fixed_cost": vehicle_fixed_cost,
                 "driver_cost": driver_cost,
                 "number_of_replenishment": number_of_replenishments,
