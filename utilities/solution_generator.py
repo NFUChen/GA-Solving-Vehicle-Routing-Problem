@@ -73,14 +73,14 @@ class SolutionGenerator(BuilderFactory):
 
         for depot in all_depots_to_be_assigned:
             #-----------------------------------------------------------------------#
-            # 無需延遲配送的站點, 需當墊背的增取時間
+            # == 0 depots that dont't need delayed delivery
             vehicle_idx_assigned = depot.assign_vehicle()
             if (depot.earilest_time_can_be_delivered == 0):
                 vehicles_with_assigned_depots[vehicle_idx_assigned].append(
                     depot.depot_name)
                 continue
             #-----------------------------------------------------------------------#
-            #!= 0 需延遲配送的站點
+            #!= 0 depots need delayed delivery
             available_vehicles_for_current_depot = depot.available_vehicles
 
             is_delayed_depot_assigned = False

@@ -22,7 +22,6 @@ class ConstraintChecker(BuilderFactory):
         warehouse_depot = 0
         for depot_name in route[1:-1]:  # [0,1,2,3,0] -> [1,2,3]
             current_depot = self.depots[depot_name]
-            # product is a dict
             if current_depot.depot_name == warehouse_depot:
                 copy_vehicle.replenish()
 
@@ -41,7 +40,7 @@ class ConstraintChecker(BuilderFactory):
                     all_depots.remove(depot_idx)
         return len(all_depots) == 0
    # -------------------------------------------------------------------------------------------------
-   # for procssing route (e.g., inserting replenish point and warehose depot)
+   # for procssing route (e.g., inserting replenishing points and warehouse depot)
 
     def _start_from_warehouse_and_go_back_to_warehouse_helper(self, route: List[int]) -> List[int]:
         '''
@@ -115,8 +114,9 @@ class ConstraintChecker(BuilderFactory):
 
         return True
 
-    def is_all_depots_passing_time_window_constraints(self, vehicle_idx: int, route: List[int]):
-        # [0,1,2,3,0] -> [1,2,3] is_passing_time_window_constraints will take care of inserting warehose
+    def is_all_depots_passing_time_window_constraints(self, vehicle_idx: int, route: List[int]) -> bool:
+        # [0,1,2,3,0] -> [1,2,3]
+        # is_passing_time_window_constraints will take care of inserting warehouse and inserting replenishing points.
         route_without_warehouse_depot = [
             depot_idx for depot_idx in route if depot_idx != 0]
 

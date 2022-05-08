@@ -167,7 +167,7 @@ class SolutionChromosome(BuilderFactory):
 
         return vehicle_mutaion_and_crossover_dict
 
-    def _is_route_contains_immutable_depots(self, route):
+    def _is_route_contains_immutable_depots(self, route) -> bool:
         route_without_warehouse_depot = route[1:-1]
         for depot in route_without_warehouse_depot:
             if depot in self.immutable_depot_names:

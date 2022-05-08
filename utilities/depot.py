@@ -46,10 +46,10 @@ class Depot:
 
     def __gt__(self, _other_depot: Depot) -> bool:
 
-        # 要提早送的
+        # depots needing early delivery
         if self.latest_time_must_be_delivered > _other_depot.latest_time_must_be_delivered:
             return 1
-        # 需延遲運送的
+        # depots needing early delivery
         if self.earilest_time_can_be_delivered > _other_depot.earilest_time_can_be_delivered:
             return -1
 
