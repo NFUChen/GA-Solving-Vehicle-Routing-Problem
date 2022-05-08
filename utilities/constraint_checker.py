@@ -56,15 +56,15 @@ class ConstraintChecker(BuilderFactory):
             return False
 
         # only consider delivery time to final depot (warehose depot), so not including shipment discharging time
-        total_time_of_before_arriving_checking_depot_idx = (total_time_of_completing_route -
-                                                            checking_depot.get_delivery_time_to_depot(warehose_depot))
-        total_time_of_before_arriving_checking_depot_idx -= current_vehicle.shipement_discharging_time
+        total_time_before_arriving_checking_depot_idx = (total_time_of_completing_route -
+                                                         checking_depot.get_delivery_time_to_depot(warehose_depot))
+        total_time_before_arriving_checking_depot_idx -= current_vehicle.shipement_discharging_time
 
-        if (total_time_of_before_arriving_checking_depot_idx < checking_depot.earilest_time_can_be_delivered):
+        if (total_time_before_arriving_checking_depot_idx < checking_depot.earilest_time_can_be_delivered):
             # print("earilest_time_can_be_delivered")
             return False
 
-        if (total_time_of_before_arriving_checking_depot_idx > checking_depot.latest_time_must_be_delivered):
+        if (total_time_before_arriving_checking_depot_idx > checking_depot.latest_time_must_be_delivered):
             # print("latest_time_must_be_delivered")
             return False
 
