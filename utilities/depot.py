@@ -44,7 +44,7 @@ class Depot:
     def available_vehicles(self) -> List[int]:
         return self._available_vehicles
 
-    def __gt__(self, _other_depot: Depot) -> bool:
+    def __gt__(self, _other_depot: Depot) -> int:
 
         # depots needing early delivery
         if self.latest_time_must_be_delivered > _other_depot.latest_time_must_be_delivered:

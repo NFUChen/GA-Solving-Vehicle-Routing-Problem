@@ -57,10 +57,6 @@ class SolutionChromosome(BuilderFactory):
             self._update_resources_used(chosen_vehicle_idx, mutated_route)
             self.solution[chosen_vehicle_idx] = mutated_route
 
-        # print("Mutate: ", mutation_func.__name__)
-        # print(chosen_vehicle_idx, chosen_vehicle_route)
-        # print(mutated_route)
-
         return self
 
     def crossover(self, _other_solution_chromosome: SolutionChromosome, crossover_rate: float) -> 'List[SolutionChromosome] | None':

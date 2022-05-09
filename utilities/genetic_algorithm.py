@@ -155,4 +155,3 @@ class GeneticAlgorithm:
                 f"New Population Fitness: {','.join([str(round(chromosome.fitness, 4)) for chromosome in self.population])}")
             print("-" * 100, '\n')
             self.current_iteration += 1
-        # print(count)
