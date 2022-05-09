@@ -30,8 +30,7 @@ class SolutionGenerator(BuilderFactory):
     def __init__(self, constraint_checker: ConstraintChecker = ConstraintChecker()) -> None:
         super().__init__()
         if not isinstance(constraint_checker, ConstraintChecker):
-            raise TypeError(
-                f"'constraint_checker' is not a ConstraintChecker instance, given {type(constraint_checker)} type")
+            raise TypeError(f"'constraint_checker' is not a ConstraintChecker instance, given {type(constraint_checker)} type")
         self.checker = constraint_checker
         self.optimizer = Optimizer()
         self.resource_calc = RouteResourceCalculator()
@@ -66,8 +65,7 @@ class SolutionGenerator(BuilderFactory):
         # [1,2 ...., n], 0 (warehouse) should be excluded
         all_depots_to_be_assigned = deepcopy(self.sorted_depots_to_be_assigned)
 
-        vehicles_with_assigned_depots = deepcopy(
-            self.vehicles_with_assigned_depots)  # {0:[], 1:[], 2:[] ..., n:[]}
+        vehicles_with_assigned_depots = deepcopy(self.vehicles_with_assigned_depots)  # {0:[], 1:[], 2:[] ..., n:[]}
 
         for depot in all_depots_to_be_assigned:
             #-----------------------------------------------------------------------#
@@ -89,8 +87,7 @@ class SolutionGenerator(BuilderFactory):
                     continue
                 if self.checker.is_passing_time_window_constraints(vehicle_idx, current_route, current_depot_idx):
                     # only execute once, once complete appending operation, break current loop
-                    vehicles_with_assigned_depots[vehicle_idx].append(
-                        current_depot_idx)
+                    vehicles_with_assigned_depots[vehicle_idx].append(current_depot_idx)
                     is_delayed_depot_assigned = True
                     break
             if not is_delayed_depot_assigned:
@@ -101,12 +98,9 @@ class SolutionGenerator(BuilderFactory):
             if len(assigned_depots) == 0:  # if assigned route is a empty list
                 continue
 
-            shortage_route = self._start_from_warehouse_and_go_back_to_warehouse_helper(
-                assigned_depots)
-            shortage_points = self.optimizer.find_shortage_points_in_route_helper(
-                vehicle_idx, shortage_route)
-            non_shortage_route = self.optimizer.insert_replenish_points_for_route_helper(
-                shortage_points, shortage_route)
+            shortage_route = self._start_from_warehouse_and_go_back_to_warehouse_helper(assigned_depots)
+            shortage_points = self.optimizer.find_shortage_points_in_route_helper(vehicle_idx, shortage_route)
+            non_shortage_route = self.optimizer.insert_replenish_points_for_route_helper(shortage_points, shortage_route)
 
             vehicles_with_assigned_depots[vehicle_idx] = non_shortage_route
 
@@ -139,7 +133,6 @@ class SolutionGenerator(BuilderFactory):
         valid_solution_chromosomes = []
         print("Processing Solution Chromosomes...")
         # tqdm for progress tqdm(iterable)
-
         for solution in tqdm(valid_solutions):
             valid_solution_chromosomes.append(
                 SolutionChromosome(solution, self.all_depot_names_with_time_window_constraints))

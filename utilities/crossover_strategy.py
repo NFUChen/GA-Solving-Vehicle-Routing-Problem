@@ -33,8 +33,7 @@ class CrossoverStrategy:
         self.solution[self_vehicle_idx].insert(self_depot_idx, other_depot)
 
         _other_solution[other_vehicle_idx].remove(other_depot)
-        _other_solution[other_vehicle_idx].insert(
-            other_depot_idx, self_depot_idx)
+        _other_solution[other_vehicle_idx].insert(other_depot_idx, self_depot_idx)
 
         return [self.solution, _other_solution]  # as child_x and child_y
 
@@ -45,7 +44,8 @@ class CrossoverStrategy:
         return choice(other_solution_chromosome_vehicles_can_be_chosen_for_crossover)
 
     def _randomly_choose_a_depot_in_a_route(self, route: List[int]) -> int:
-        route_without_warehouse_depot = [
-            depot_idx for depot_idx in route if depot_idx != 0]
+        route_without_warehouse_depot = [depot_idx 
+                                        for depot_idx in route 
+                                        if depot_idx != 0]
 
         return choice(route_without_warehouse_depot)

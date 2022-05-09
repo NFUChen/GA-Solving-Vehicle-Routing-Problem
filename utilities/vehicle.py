@@ -32,8 +32,7 @@ class Vehicle:
         self._available_depots = [depot_idx
                                   for depot_idx, status in self.depots_delivery_status.items()
                                   if status == 1]
-        self._all_depot_names = [
-            name for name in self.depots_delivery_status]
+        self._all_depot_names = [name for name in self.depots_delivery_status]
         self.vehicle_name = vehicle_name
         # 固定服務時間(卸貨)為20分鐘
         self.shipement_discharging_time = shipement_discharging_time
@@ -68,8 +67,7 @@ class Vehicle:
 
         for product, demand_quantity in demand.items():
             if product not in self.capacity:
-                raise TypeError(
-                    f"Product mismath, Vechicle doesn't have '{product}'")
+                raise TypeError(f"Product mismath, Vechicle doesn't have '{product}'")
             self.capacity[product] -= demand_quantity
 
     def replenish(self) -> None:
@@ -89,8 +87,7 @@ class Vehicle:
         P.S. depot_id is 1 based
         '''
         if not self._is_valid_depot(depot_id):
-            raise ValueError(
-                f"'depot_id' must be one of the following: {self._all_depot_names}")
+            raise ValueError(f"'depot_id' must be one of the following: {self._all_depot_names}")
 
         return depot_id in self._available_depots
 

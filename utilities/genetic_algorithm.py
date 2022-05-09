@@ -11,6 +11,7 @@ class GeneticAlgorithm:
                  mutation_rate,
                  crossover_rate,
                  maximum_iteration) -> None:
+        self.solution_generator = SolutionGenerator()
         self.population_size = population_size
         self.population = None
         self.total_fitness_of_current_population = None
@@ -21,16 +22,12 @@ class GeneticAlgorithm:
         self.global_best_solution = None
         self.current_best_solution = None
 
-        self.solution_generator = SolutionGenerator()
-
         self.max_mutation_rate = mutation_rate
         self.max_crossover_rate = crossover_rate
 
-        self.mutation_rate_lookup = np.linspace(
-            self.max_mutation_rate, 0, self.maximum_iteration)
+        self.mutation_rate_lookup = np.linspace(self.max_mutation_rate, 0, self.maximum_iteration)
 
-        self.crossover_rate_lookup = np.linspace(
-            0, self.max_crossover_rate, self.maximum_iteration)
+        self.crossover_rate_lookup = np.linspace(0, self.max_crossover_rate, self.maximum_iteration)
 
     @property
     def current_level_mutation_rate(self) -> float:
@@ -48,8 +45,7 @@ class GeneticAlgorithm:
 
     def _generate_initial_population(self) -> List[SolutionChromosome]:
 
-        initial_population = self.solution_generator.generate_valid_solutions(
-            self.population_size)
+        initial_population = self.solution_generator.generate_valid_solutions(self.population_size)
         # -> [0, 1, 2, 3], remember to choose last one to get the best fitness, chromosome is sorted by 'FITNESS'
         initial_population.sort()
 
@@ -90,8 +86,7 @@ class GeneticAlgorithm:
             if (parent_x.fitness != parent_y.fitness):
                 break
 
-        next_generation_children = parent_x.crossover(
-            parent_y, self.current_level_crossover_rate)
+        next_generation_children = parent_x.crossover(parent_y, self.current_level_crossover_rate)
 
         return next_generation_children
 
@@ -107,8 +102,7 @@ class GeneticAlgorithm:
         new_population.sort()
         self.population = new_population
         self.current_best_solution = new_population[-1]
-        self.global_best_solution = max(
-            self.global_best_solution, self.current_best_solution)
+        self.global_best_solution = max(self.global_best_solution, self.current_best_solution)
 
     @property
     def _is_termination_criteria_met(self) -> bool:
@@ -124,9 +118,8 @@ class GeneticAlgorithm:
             next_generation_population = []
             while (len(next_generation_population) < self.population_size):
                 crossovered_children = self._crossover_two_parents_and_get_new_generation_children()
-                mutatied_children = self._mutate_two_children_and_get_mutated_children(
-                    crossovered_children)  # mutation is in-place operation,
-                next_generation_population.extend(mutatied_children)
+                mutated_children = self._mutate_two_children_and_get_mutated_children(crossovered_children) 
+                next_generation_population.extend(mutated_children)
             self._update_population_info(next_generation_population)
             print(f"Iteration: {self.current_iteration} ")
             print(f"Total Fitness: {self.total_fitness_of_current_population}")

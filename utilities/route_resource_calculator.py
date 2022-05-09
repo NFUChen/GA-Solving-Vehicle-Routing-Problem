@@ -33,8 +33,7 @@ class RouteResourceCalculator(BuilderFactory):
             start_depot = route[idx]
             end_depot = route[idx + 1]
 
-            distance = self.depots[start_depot].get_distance_to_depot(
-                end_depot)
+            distance = self.depots[start_depot].get_distance_to_depot(end_depot)
             total_distance += distance
 
         return total_distance
@@ -50,8 +49,7 @@ class RouteResourceCalculator(BuilderFactory):
             start_depot = route[idx]
             end_depot = route[idx + 1]
 
-            delivery_time += self.depots[start_depot].get_delivery_time_to_depot(
-                end_depot)
+            delivery_time += self.depots[start_depot].get_delivery_time_to_depot(end_depot)
             service_time += self.vehicles[vehicle_idx].shipement_discharging_time
         total_time = delivery_time + service_time
         return total_time
@@ -84,8 +82,7 @@ class RouteResourceCalculator(BuilderFactory):
                     check_end_depot = route[idx + 2]
                     if check_warehouse_depot != 0:  # this is replenish point
                         continue
-                    replenish_route_info = (
-                        check_start_depot, check_warehouse_depot, check_end_depot)
+                    replenish_route_info = (check_start_depot, check_warehouse_depot, check_end_depot)
                     route_info_dict[vehicle_idx].append(replenish_route_info)
         return route_info_dict
 
@@ -109,11 +106,9 @@ class RouteResourceCalculator(BuilderFactory):
                     number_of_replenishments += 1
                     continue
                 start_depot, end_depot = start_depot_to_end_depot
-                total_delivery_time += self.depots[start_depot].get_delivery_time_to_depot(
-                    end_depot)
+                total_delivery_time += self.depots[start_depot].get_delivery_time_to_depot(end_depot)
                 total_service_time += self.vehicles[vehicle_idx].shipement_discharging_time
-                total_distance += self.depots[start_depot].get_distance_to_depot(
-                    end_depot)
+                total_distance += self.depots[start_depot].get_distance_to_depot(end_depot)
 
         fuel_fee = total_delivery_time * self.vehicles[vehicle_idx].fuel_fee
         vehicle_fixed_cost = self.vehicles[vehicle_idx].fixed_cost

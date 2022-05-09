@@ -16,12 +16,10 @@ class DepotBuilder:
             file_name.earilest_time_can_be_delivered)
         self.depot_latest_time_must_be_delivered = pd.read_csv(
             file_name.latest_time_must_be_delivered)
-
         self.vehicle_depots_delivery_status = pd.read_csv(
             file_name.depots_delivery_status, index_col=0).transpose()
 
         self._number_of_depots = len(self.depot_demand)
-
         self._depots = self.build_depots()
 
     def build_depots(self) -> Dict[int, Depot]:
@@ -32,15 +30,11 @@ class DepotBuilder:
         for idx in range(self._number_of_depots):
             depot_name = idx
             depot_demand = dict(self.depot_demand.iloc[idx, :])
-            depot_earilest_time_can_be_delivered = self.depot_earilest_time_can_be_delivered[
-                "earilest_time_can_be_delivered"][idx]
-            depot_latest_time_must_be_delivered = self.depot_latest_time_must_be_delivered[
-                "latest_time_must_be_delivered"][idx]
+            depot_earilest_time_can_be_delivered = self.depot_earilest_time_can_be_delivered["earilest_time_can_be_delivered"][idx]
+            depot_latest_time_must_be_delivered = self.depot_latest_time_must_be_delivered["latest_time_must_be_delivered"][idx]
             depot_distance = list(self.depot_distance.iloc[idx, :])
             depot_time = list(self.depot_time.iloc[idx, :])
-            vehicle_depots_delivery_status = list(
-                self.vehicle_depots_delivery_status.iloc[idx, :]
-            )
+            vehicle_depots_delivery_status = list(self.vehicle_depots_delivery_status.iloc[idx, :])
 
             created_depot = Depot(depot_demand,
                                   depot_earilest_time_can_be_delivered,

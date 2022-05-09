@@ -32,13 +32,13 @@ class Depot:
         self._delivery_time_to_other_depots = {depot_name: time
                                                for depot_name, time in enumerate(delivery_time_to_other_depots)}
         self._vehicle_depots_delivery_status = {
-            depot_name: delivery_status for depot_name, delivery_status in enumerate(vehicle_depots_delivery_status)
+            depot_name: delivery_status 
+            for depot_name, delivery_status in enumerate(vehicle_depots_delivery_status)
         }
-        self._all_depot_names = [
-            name for name in self._distance_to_other_depots]
-        self._available_vehicles = [
-            vehicle_idx for vehicle_idx, status in self._vehicle_depots_delivery_status.items()
-            if status == 1]
+        self._all_depot_names = [name for name in self._distance_to_other_depots]
+        self._available_vehicles = [vehicle_idx 
+                                    for vehicle_idx, status in self._vehicle_depots_delivery_status.items()
+                                    if status == 1]
 
     @property
     def available_vehicles(self) -> List[int]:
@@ -82,8 +82,7 @@ class Depot:
     def get_distance_to_depot(self, depot_id: str) -> int:
 
         if not self._is_valid_depot(depot_id):
-            raise ValueError(
-                f"'depot_id' must be one of the following: {self._all_depot_names}")
+            raise ValueError(f"'depot_id' must be one of the following: {self._all_depot_names}")
 
         distance = self._distance_to_other_depots[depot_id]
 
@@ -92,8 +91,7 @@ class Depot:
     def get_delivery_time_to_depot(self, depot_id: str) -> int:
 
         if not self._is_valid_depot(depot_id):
-            raise ValueError(
-                f"'depot_id' must be one of the following: {self._all_depot_names}")
+            raise ValueError(f"'depot_id' must be one of the following: {self._all_depot_names}")
 
         delivery_time = self._delivery_time_to_other_depots[depot_id]
 
