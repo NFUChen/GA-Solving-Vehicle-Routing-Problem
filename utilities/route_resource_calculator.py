@@ -38,6 +38,7 @@ class RouteResourceCalculator(BuilderFactory):
             total_distance += distance
 
         return total_distance
+
     def _calculate_time_for_current_route(self, vehicle_idx: int, route: List[int]) -> int:
         if len(route) < 2:  # [], [1] -> no distance
             return 0
@@ -110,15 +111,15 @@ class RouteResourceCalculator(BuilderFactory):
                     route_info_dict[vehicle_idx].append(replenish_route_info)
         return route_info_dict
 
-    def calculate_solution_resources(self, solusion: Solution) -> Dict[str, 'float | int']:
+    def calculate_solution_resources(self, solution: Solution) -> Dict[str, 'float | int']:
         '''
         This method is a public API expected to expose to users.
         Functionality:
-            Calculate total resources needed for 'a given solusion'
+            Calculate total resources needed for 'a given solution'
         '''
 
         route_info_dict = self._get_all_route_info_as_dict(
-            solusion)  # {0: [(0, 7)]
+            solution)  # {0: [(0, 7)]
         number_of_vehicles_assigned = len(route_info_dict)
         total_delivery_time = 0
         total_service_time = 0

@@ -59,9 +59,6 @@ class ConstraintChecker(BuilderFactory):
         copy_vehicle = deepcopy(self.vehicles[vehicle_idx])
         for depot_name in route:
             current_depot = self.depots[depot_name]
-#             print("Current Capacity", copy_vehicle.capacity)
-#             print("Demand",current_depot.demand)
-            # product is a dict
             copy_vehicle.discharge(current_depot.demand)
             if copy_vehicle.is_out_of_stock():
                 shortage_points.append(depot_name)
