@@ -1,5 +1,5 @@
 from typing import List
-from utilities.solution_chromosome import SolutionChromosome
+from .solution_chromosome import SolutionChromosome
 from .solution_generator import SolutionGenerator
 from random import random
 from copy import deepcopy
