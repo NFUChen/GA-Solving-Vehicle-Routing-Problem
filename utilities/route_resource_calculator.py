@@ -1,6 +1,5 @@
 from typing import Dict, List, Tuple
 from .base_class import BuilderFactory
-
 Solution = Dict[int, List[int]]
 
 
@@ -39,7 +38,6 @@ class RouteResourceCalculator(BuilderFactory):
             total_distance += distance
 
         return total_distance
-
     def _calculate_time_for_current_route(self, vehicle_idx: int, route: List[int]) -> int:
         if len(route) < 2:  # [], [1] -> no distance
             return 0

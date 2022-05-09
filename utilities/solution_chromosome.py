@@ -3,6 +3,7 @@ from random import random, choice
 from .base_class import BuilderFactory
 from .route_resource_calculator import RouteResourceCalculator
 from .mutation_strategy import MutationStrategy
+from .crossover_strategy import CrossoverStrategy
 # e.g.,  {0: [], 1: [0, 8, 6, 0], 2: [0, 7, 5, 0], 3: [0, 3, 0], 4: []}
 Solution = Dict[int, List[int]]
 
@@ -16,45 +17,43 @@ class SolutionChromosome(BuilderFactory):
                  solution: Solution,
                  immutable_depot_names: List[int],
                  resources_used: Dict[str, float] = None,
-                 generation: int = 0, ) -> None:
+                 generation: int = 0, is_children:bool=False) -> None:
         self.solusion = solution
 
         # dont' choose vehicle without any depots being assigned, or len(route) < 3, [0,1,0] -> will cause mutation error,
         # mutation strategy need to pick two 'DIFFERENT' route index and that it shouldn't be 0
         self.mutation_strategy = MutationStrategy(immutable_depot_names)
+        self.crossover_strategy = CrossoverStrategy(immutable_depot_names)
         self.resource_calc = RouteResourceCalculator()
         self.immutable_depot_names = immutable_depot_names
         self.generation = generation
 
+        
+
+        self._vehicle_mutaion_and_crossover_dict = self._filter_vehicle_can_be_chosen_for_mutation_and_crossover()
+        self.vehicles_can_be_chosen_for_mutation = self._vehicle_mutaion_and_crossover_dict["mutation"]
+        self.vehicles_can_be_chosen_for_crossover = self._vehicle_mutaion_and_crossover_dict["crossover"]
+        self.is_children = is_children
+
+
         if resources_used is not None:
             self.resources_used = resources_used
             return
-
         self.resources_used = self.resource_calc.calculate_solution_resources(
             solution)
 
-        self._vehicle_mutaion_and_crossover_dict = self._filter_vehicle_can_be_chosen_for_mutation_and_crossover()
-
-        self.vehicles_can_be_chosen_for_mutation = self._vehicle_mutaion_and_crossover_dict[
-            "mutation"]
-        self.vehicles_can_be_chosen_for_crossover = self._vehicle_mutaion_and_crossover_dict[
-            "crossover"]
-
     def mutate(self, mutation_rate: float, chosen_vehicle_idx: int = None) -> SolutionChromosome:
         random_value = random()
-        if random_value > mutation_rate:
+        if random_value > mutation_rate: # 0.05 
             return self
+        for chosen_vehicle_idx in self.vehicles_can_be_chosen_for_mutation:
+            mutation_func = self.mutation_strategy.randomly_choose_mutation_strategy()
+            chosen_vehicle_route = self.solusion[chosen_vehicle_idx]
+            mutated_route = mutation_func(chosen_vehicle_route)
 
-        mutation_func = self.mutation_strategy.randomly_choose_mutation_strategy()
-        if chosen_vehicle_idx is None:
-            chosen_vehicle_idx = self._randomly_choose_a_vehicle()
-        chosen_vehicle_route = self.solusion[chosen_vehicle_idx]
-        mutated_route = mutation_func(chosen_vehicle_route)
-
-        # after mutation, update chromosome fitness ( based on self.resources_used, and self.solusion)
-
-        self._update_resources_used(chosen_vehicle_idx, mutated_route)
-        self.solusion[chosen_vehicle_idx] = mutated_route
+            # after mutation, update chromosome fitness ( based on self.resources_used, and self.solusion)
+            self._update_resources_used(chosen_vehicle_idx, mutated_route)
+            self.solusion[chosen_vehicle_idx] = mutated_route
 
         # print("Mutate: ", mutation_func.__name__)
         # print(chosen_vehicle_idx, chosen_vehicle_route)
@@ -62,8 +61,28 @@ class SolutionChromosome(BuilderFactory):
 
         return self
 
-    def crossover(self, _other_solution_chromosome: SolutionChromosome, crossover_rate: float) -> List[SolutionChromosome]:
-        pass
+    def crossover(self, _other_solution_chromosome: SolutionChromosome, crossover_rate: float) -> 'List[SolutionChromosome] | None':
+        
+
+        random_value = random()
+        if random_value > crossover_rate:
+            child_x = self._create_next_generation_self_with_new_solusion(self.solusion)
+            child_y = self._create_next_generation_self_with_new_solusion(self.solusion)           
+            return [child_x, child_y]
+
+        #self_gene
+        #other_gene
+        child_x = self._create_next_generation_self_with_new_solusion(self.solusion)
+        child_y = self._create_next_generation_self_with_new_solusion(self.solusion)   
+        return [child_x, child_y]
+        
+
+        
+        
+
+        
+
+        
 
     def __repr__(self) -> str:
         chromosome = f"Chromosome: {self.solusion}"
@@ -79,6 +98,8 @@ class SolutionChromosome(BuilderFactory):
         total_cost = f"Total Cost: ${total_cost_amount}"
         number_of_vehicles_assigned = f"Number of Vehicles Assigned: {resources['number_of_vehicles_assigned']}"
         number_of_replenishment = f"Number of Replenishsments: {resources['number_of_replenishment']}"
+        generation = f"Generation: {self.generation}"
+        fitness = f"Fitness: {round(self.fitness, 4)}"
         sep = "-" * 60
 
         _repr = [
@@ -91,10 +112,12 @@ class SolutionChromosome(BuilderFactory):
             total_delivery_time,
             number_of_vehicles_assigned,
             number_of_replenishment,
+            generation,
+            fitness,
             sep
         ]
 
-        return "\n\t".join(_repr)
+        return "\n".join(_repr)
 
     def __eq__(self, _other_solution_chromosome: SolutionChromosome) -> bool:
         return self.fitness == _other_solution_chromosome.fitness
@@ -115,13 +138,20 @@ class SolutionChromosome(BuilderFactory):
             resources["vehicle_fixed_cost"] +
             resources["driver_cost"]
         )
-        return 1 / total_cost
+
+
+        return (1 / total_cost) * 1000000
+    
 
     def _create_next_generation_self_with_new_solusion(self, new_solusion: Solution) -> SolutionChromosome:
         # passing in self.resources_used is for performance concern, which avoidss duplicate computation.
-        return SolutionChromosome(new_solusion, self.immutable_depot_names, self.resources_used, self.generation + 1)
+        if new_solusion == self.solusion: # two parents are not successfully crossovered
+            return SolutionChromosome(new_solusion, self.immutable_depot_names, self.resources_used, self.generation + 1)
+
+        return SolutionChromosome(new_solusion, self.immutable_depot_names,None, self.generation + 1 )
 
     def _randomly_choose_a_vehicle(self) -> int:
+        print(self.vehicles_can_be_chosen_for_mutation)
 
         return choice(self.vehicles_can_be_chosen_for_mutation)
 
@@ -165,7 +195,6 @@ class SolutionChromosome(BuilderFactory):
             if not self._is_route_contains_immutable_depots(route):
                 vehicle_mutaion_and_crossover_dict["crossover"].append(
                     vehicle_idx)
-
         return vehicle_mutaion_and_crossover_dict
 
     def _is_route_contains_immutable_depots(self, route) -> bool:
@@ -177,7 +206,6 @@ class SolutionChromosome(BuilderFactory):
 
     def _reproduction_mutate(self) -> SolutionChromosome:
         for vehicle_idx in self.vehicles_can_be_chosen_for_mutation:
-            print(vehicle_idx)
             self.mutate(1, vehicle_idx)
 
         return self
