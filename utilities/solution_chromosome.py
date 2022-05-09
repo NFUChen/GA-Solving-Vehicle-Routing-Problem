@@ -40,18 +40,19 @@ class SolutionChromosome(BuilderFactory):
         self.vehicles_can_be_chosen_for_crossover = self._vehicle_mutaion_and_crossover_dict[
             "crossover"]
 
-    def mutate(self, mutation_rate: float) -> SolutionChromosome:
+    def mutate(self, mutation_rate: float, chosen_vehicle_idx: int = None) -> SolutionChromosome:
         random_value = random()
         if random_value > mutation_rate:
             return self
 
         mutation_func = self.mutation_strategy.randomly_choose_mutation_strategy()
-
-        chosen_vehicle_idx = self._randomly_choose_a_vehicle()
+        if chosen_vehicle_idx is None:
+            chosen_vehicle_idx = self._randomly_choose_a_vehicle()
         chosen_vehicle_route = self.solusion[chosen_vehicle_idx]
         mutated_route = mutation_func(chosen_vehicle_route)
 
         # after mutation, update chromosome fitness ( based on self.resources_used, and self.solusion)
+
         self._update_resources_used(chosen_vehicle_idx, mutated_route)
         self.solusion[chosen_vehicle_idx] = mutated_route
 
@@ -173,3 +174,10 @@ class SolutionChromosome(BuilderFactory):
             if depot in self.immutable_depot_names:
                 return True
         return False
+
+    def _reproduction_mutate(self) -> SolutionChromosome:
+        for vehicle_idx in self.vehicles_can_be_chosen_for_mutation:
+            print(vehicle_idx)
+            self.mutate(1, vehicle_idx)
+
+        return self

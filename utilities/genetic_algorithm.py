@@ -1,3 +1,5 @@
+from typing import List
+from utilities.solution_chromosome import SolutionChromosome
 from .solution_generator import SolutionGenerator
 from random import random
 from copy import deepcopy
@@ -41,7 +43,7 @@ class GeneticAlgorithm:
         initial_half_population = self.solution_generator.generate_valid_solutions(
             self.population_size // 2)
         half_population_cloned = deepcopy(initial_half_population)
-
+        self._reproduce(half_population_cloned)  # in-place operation
         total_population = [
             *initial_half_population, *half_population_cloned
         ]
@@ -83,6 +85,11 @@ class GeneticAlgorithm:
     def _mutate_two_children(self) -> None:
         pass
 
+    def _reproduce(self, cloned_chromosomes: List[SolutionChromosome]) -> None:
+        for chromosome in cloned_chromosomes:
+            chromosome._reproduction_mutate()
+        return cloned_chromosomes
+
     @property
     def is_termination_criteria_met(self) -> bool:
         if self.current_iteration > self.maximum_iteration:
@@ -91,13 +98,11 @@ class GeneticAlgorithm:
         return False
 
     def solve(self) -> None:
-        count = {}
-
         self._generate_initial_population()
-        while not (self.is_termination_criteria_met):
-            self._calculate_total_fitness_of_population()
-            partent = self._select_a_parent()
-            self._crossover_two_parents()
-            self._mutate_two_children()
-            self.current_iteration += 1
-        print(count)
+        # while not (self.is_termination_criteria_met):
+        #     self._calculate_total_fitness_of_population()
+        #     partent = self._select_a_parent()
+        #     self._crossover_two_parents()
+        #     self._mutate_two_children()
+        #     self.current_iteration += 1
+        # print(count)

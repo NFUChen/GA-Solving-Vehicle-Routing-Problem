@@ -41,7 +41,7 @@ class RouteResourceCalculator(BuilderFactory):
         return total_distance
 
     def _calculate_time_for_current_route(self, vehicle_idx: int, route: List[int]) -> int:
-        if len(route) < 2:  # [0]
+        if len(route) < 2:  # [], [1] -> no distance
             return 0
 
         delivery_time = 0

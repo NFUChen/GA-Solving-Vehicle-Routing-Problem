@@ -128,7 +128,7 @@ class ConstraintChecker(BuilderFactory):
             checking_depot_route_idx = route_without_warehouse_depot.index(
                 checking_depot_idx)  # e.g., [1,2,3] 2 -> 1
             route_before_check_depot_idx = route_without_warehouse_depot[:checking_depot_route_idx]
-            if len(route_before_check_depot_idx) < 2:
+            if len(route_before_check_depot_idx) < 2:  # S[], [1] -> no distance
                 continue
             if checking_depot_idx not in self.depot_builder.all_depot_names_with_time_window_constraint:
                 continue
