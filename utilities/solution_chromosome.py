@@ -196,9 +196,3 @@ class SolutionChromosome(BuilderFactory):
             if depot in self.immutable_depot_names:
                 return True
         return False
-
-    def _reproduction_mutate(self) -> SolutionChromosome:
-        for vehicle_idx in self.vehicles_can_be_chosen_for_mutation:
-            self.mutate(1, vehicle_idx)
-
-        return self

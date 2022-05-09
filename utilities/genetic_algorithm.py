@@ -82,7 +82,7 @@ class GeneticAlgorithm:
 
     def _crossover_two_parents_and_get_new_generation_children(self) -> List[SolutionChromosome]:
         '''
-        產生下一代
+        Create two offsprings with crossover
         '''
         while (True):
             parent_x = self._select_a_parent()  # returns a copy of a parent
@@ -102,24 +102,6 @@ class GeneticAlgorithm:
 
         return children_copy
 
-    def _generate_initial_population_with_cloning(self) -> List[SolutionChromosome]:
-        initial_half_population = self.solution_generator.generate_valid_solutions(
-            self.population_size // 2)
-        half_population_cloned = deepcopy(initial_half_population)
-        self._reproduce(half_population_cloned)  # in-place operation
-        total_population = [
-            *initial_half_population, *half_population_cloned
-        ]
-        # -> [0, 1, 2, 3], remember to choose last one to get the best fitness, chromosome is sorted by 'FITNESS'
-        total_population.sort()
-        self.population = total_population
-        self.current_best_solution = total_population[-1]
-        self.global_best_solution = total_population[-1]
-
-    def _reproduce(self, cloned_chromosomes: List[SolutionChromosome]) -> None:
-        for chromosome in cloned_chromosomes:
-            chromosome._reproduction_mutate()
-        return cloned_chromosomes
 
     def _update_population_info(self, new_population: List[SolutionChromosome]) -> None:
         new_population.sort()

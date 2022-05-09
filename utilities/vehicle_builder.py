@@ -15,9 +15,9 @@ class VehicleBuilder:
 
         self._number_of_vehicles = len(self.vehicle_capacity)
 
-        self._vehicles = self._build_vehicles()
+        self._vehicles = self.build_vehicles()
 
-    def _build_vehicles(self) -> Dict[int, Vehicle]:
+    def build_vehicles(self) -> Dict[int, Vehicle]:
         '''
         car key is 0-based.
         '''
