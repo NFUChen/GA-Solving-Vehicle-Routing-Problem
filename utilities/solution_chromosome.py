@@ -143,8 +143,7 @@ class SolutionChromosome(BuilderFactory):
         return SolutionChromosome(new_solution, self.immutable_depot_names, None, self.generation + 1, is_children=True)
 
     def _randomly_choose_a_vehicle(self) -> int:
-        print(self.vehicles_can_be_chosen_for_mutation)
-
+        
         return choice(self.vehicles_can_be_chosen_for_mutation)
 
     def _update_resources_used(self, vehicle_idx: int, updated_route: List[int]) -> None:

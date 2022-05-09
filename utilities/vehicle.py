@@ -92,7 +92,6 @@ class Vehicle:
             raise ValueError(
                 f"'depot_id' must be one of the following: {self._all_depot_names}")
 
-        # return self.depots_delivery_status[depot_id] == 1
         return depot_id in self._available_depots
 
     def assign_depot(self) -> int:

@@ -147,11 +147,8 @@ class GeneticAlgorithm:
                 next_generation_population.extend(mutatied_children)
             self._update_population_info(next_generation_population)
             print(f"Iteration: {self.current_iteration} ")
-            print(
-                f"Total Fitness: {self.total_fitness_of_current_population}")
-            print(
-                f"Best Fitness: {self.current_best_solution.fitness}")
-            print(
-                f"New Population Fitness: {','.join([str(round(chromosome.fitness, 4)) for chromosome in self.population])}")
+            print(f"Total Fitness: {self.total_fitness_of_current_population}")
+            print(f"Best Fitness: {self.current_best_solution.fitness}")
+            print(f"New Population Fitness: {','.join([str(round(chromosome.fitness, 4)) for chromosome in self.population])}")
             print("-" * 100, '\n')
             self.current_iteration += 1

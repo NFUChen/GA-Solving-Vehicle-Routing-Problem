@@ -21,8 +21,7 @@ def timer(func):
         t1 = time()
         result = func(*args, **kwargs)
         t2 = time()
-        print(
-            f'Function {func.__name__!r} executed in {(t2-t1):.4f}s', end="\t")
+        print(f'Function {func.__name__!r} executed in {(t2-t1):.4f}s', end="\t")
         return result
     return wrap_func
 
@@ -46,8 +45,7 @@ class SolutionGenerator(BuilderFactory):
 
         print(f"Available Vehicle Names: {self.all_vehicle_names}")
         print(f"Available Depot Names: {self.all_depot_names}")
-        print(
-            f"All Depots With Time Window Constraints: {self.all_depot_names_with_time_window_constraints}")
+        print(f"All Depots With Time Window Constraints: {self.all_depot_names_with_time_window_constraints}")
 
     def _start_from_warehouse_and_go_back_to_warehouse_helper(self, route: List[int]) -> List[int]:
         '''
