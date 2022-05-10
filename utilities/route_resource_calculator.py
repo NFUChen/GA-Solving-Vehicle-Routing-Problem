@@ -110,7 +110,8 @@ class RouteResourceCalculator(BuilderFactory):
                 total_delivery_time += self.depots[start_depot].get_delivery_time_to_depot(end_depot)
                 total_service_time += self.vehicles[vehicle_idx].shipement_discharging_time
                 total_distance += self.depots[start_depot].get_distance_to_depot(end_depot)
-                vehicle_total_fixed_cost += self.vehicles[vehicle_idx].fixed_cost
+                
+            vehicle_total_fixed_cost += self.vehicles[vehicle_idx].fixed_cost
 
         fuel_fee = total_distance * self.vehicles[vehicle_idx].fuel_fee * self.vehicles[vehicle_idx].fuel_efficiency
         time_on_duty_in_minute = total_delivery_time + total_service_time

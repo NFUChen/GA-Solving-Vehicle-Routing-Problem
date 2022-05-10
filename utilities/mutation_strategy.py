@@ -46,7 +46,7 @@ class MutationStrategy:
         while number_of_attempts_to_find_index < self.MAXIMUM_ATTEMPT:
             two_points = self._randomly_choose_two_different_index_positions(route)
             if two_points is None:
-                 return copy_route
+                return copy_route
             left_ptr, right_ptr = two_points 
             if not self._is_two_points_mutation_affecting_immutable_depots(route, [left_ptr, right_ptr]):
                 break
@@ -54,7 +54,6 @@ class MutationStrategy:
 
         if number_of_attempts_to_find_index == self.MAXIMUM_ATTEMPT:
             return copy_route
-
         self._swap_depots(copy_route, left_ptr, right_ptr)
 
         return copy_route

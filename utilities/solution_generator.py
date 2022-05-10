@@ -1,7 +1,7 @@
 from typing import List, Dict, Union
 from copy import deepcopy
 from time import time
-
+from random import choice
 from click import progressbar
 from .base_class import BuilderFactory
 from .constraint_checker import ConstraintChecker
@@ -37,7 +37,10 @@ class SolutionGenerator(BuilderFactory):
 
         self.all_depot_names = self.depots.all_depot_names
         self.all_vehicle_names = self.vehicles.all_vehicle_names
-        self.sorted_depots_to_be_assigned = self.sorted_depots  # from BuilderFactry
+        self.sorted_vehicles_can_be_assigned = self.vehicle_builder.sorted_vehicles
+        
+
+
         self.all_depot_names_with_time_window_constraints = self.depot_builder.all_depot_names_with_time_window_constraint
         self.vehicles_with_assigned_depots = {vehicle_name: []
                                               for vehicle_name in self.all_vehicle_names}
@@ -55,7 +58,7 @@ class SolutionGenerator(BuilderFactory):
         return [0, *route, 0]
 
     @timer
-    def _generate_initial_raw_solution(self) -> 'Solution | int':
+    def _generate_initial_raw_solution(self) -> 'Solution | List[int]':
         '''
         .generate_initial_raw_solution generates a raw solution that is subject to further check with constraint checker (i.e., ConstraintChecker)
 
@@ -63,35 +66,41 @@ class SolutionGenerator(BuilderFactory):
 
         '''
         # [1,2 ...., n], 0 (warehouse) should be excluded
-        all_depots_to_be_assigned = deepcopy(self.sorted_depots_to_be_assigned)
-
+        # all_depots_to_be_assigned = deepcopy(self.sorted_depots_to_be_assigned)
         vehicles_with_assigned_depots = deepcopy(self.vehicles_with_assigned_depots)  # {0:[], 1:[], 2:[] ..., n:[]}
+        
+        early_assigned_depots = self.depot_builder.depots_need_to_be_assigned_early
+        regular_depots = self.depot_builder.depots_without_time_window_constraints
+        late_assigned_depots = self.depot_builder.depots_need_to_be_assigned_late
+        
+        order_of_depots_assigning = [early_assigned_depots, regular_depots]
 
-        for depot in all_depots_to_be_assigned:
-            #-----------------------------------------------------------------------#
-            # == 0 depots that dont't need delayed delivery
-            vehicle_idx_assigned = depot.assign_vehicle()
-            if (depot.earilest_time_can_be_delivered == 0):
-                vehicles_with_assigned_depots[vehicle_idx_assigned].append(
-                    depot.depot_name)
-                continue
-            #-----------------------------------------------------------------------#
-            #!= 0 depots need delayed delivery
-            available_vehicles_for_current_depot = depot.available_vehicles
+        while (True):
+            current_vehicle_idx = choice(self.all_vehicle_names)
+            current_assigned_route = vehicles_with_assigned_depots[current_vehicle_idx]
+            for existing_depots in order_of_depots_assigning:
+                self._assign_depots(vehicles_with_assigned_depots, current_vehicle_idx, existing_depots)
 
-            is_delayed_depot_assigned = False
-            for vehicle_idx in available_vehicles_for_current_depot:
+            if len(early_assigned_depots) == 0 and len(regular_depots) == 0:
+                break
+
+        vehicles_with_task = [
+            vehicle_idx 
+            for vehicle_idx, assigned_route in vehicles_with_assigned_depots.items()
+            if len(assigned_route) != 0
+        ]
+
+        for vehicle_idx in vehicles_with_task:
+            for depot_idx in late_assigned_depots.copy():
+                current_vehicle = self.vehicles[vehicle_idx]
                 current_route = vehicles_with_assigned_depots[vehicle_idx]
-                current_depot_idx = depot.depot_name
-                if len(current_route) < 2:
-                    continue
-                if self.checker.is_passing_time_window_constraints(vehicle_idx, current_route, current_depot_idx):
-                    # only execute once, once complete appending operation, break current loop
-                    vehicles_with_assigned_depots[vehicle_idx].append(current_depot_idx)
-                    is_delayed_depot_assigned = True
-                    break
-            if not is_delayed_depot_assigned:
-                return depot.depot_name
+                if (current_vehicle.is_depot_can_be_delivered(depot_idx)  and 
+                self.checker.is_passing_time_window_constraints(vehicle_idx, current_route, depot_idx) ):
+                    vehicles_with_assigned_depots[vehicle_idx].append(depot_idx)
+                    late_assigned_depots.remove(depot_idx)
+        if len(late_assigned_depots) != 0:
+            return late_assigned_depots
+
 
         # use helper function i.e., [0, *route, 0]
         for vehicle_idx, assigned_depots in vehicles_with_assigned_depots.items():
@@ -103,8 +112,24 @@ class SolutionGenerator(BuilderFactory):
             non_shortage_route = self.optimizer.insert_replenish_points_for_route_helper(shortage_points, shortage_route)
 
             vehicles_with_assigned_depots[vehicle_idx] = non_shortage_route
-
         return vehicles_with_assigned_depots
+
+    def _assign_depots(self, vehicles_with_assigned_depots:Dict[int, List[int]], current_vehicle_idx:int,existing_depots:List[int]) -> None:
+        if (existing_depots) == 0:
+            return
+        current_assigned_route = vehicles_with_assigned_depots[current_vehicle_idx]
+        for depot in existing_depots:
+            if not self.checker.is_passing_time_window_constraints(current_vehicle_idx, current_assigned_route, depot):
+                return
+            if depot not in self.vehicles[current_vehicle_idx]._available_depots:
+                continue
+            current_assigned_route.append(depot)
+            existing_depots.remove(depot)
+        
+        vehicles_with_assigned_depots[current_vehicle_idx] = current_assigned_route
+
+
+
 
     @timer
     def generate_valid_solutions(self, number_of_solutions: int) -> List[SolutionChromosome]:
@@ -119,8 +144,8 @@ class SolutionGenerator(BuilderFactory):
                 print("**Same Answer Generated**")
                 failed_solution_count += 1
                 continue
-            if isinstance(solution, int):
-                print(f"**Depot {solution} Is Not Assigned**")
+            if isinstance(solution, list):
+                print(f"**Depot {solution} Not Assigned**")
                 failed_solution_count += 1
                 continue
 

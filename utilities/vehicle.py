@@ -91,5 +91,27 @@ class Vehicle:
 
         return depot_id in self._available_depots
 
-    def assign_depot(self) -> int:
-        return choice(self._available_depots)
+    def assign_depot(self, existing_depot:List[int]) -> 'int | None':
+        existing_depot_can_be_assigned = [
+            depot for depot in existing_depot 
+            if depot in self._available_depots
+        ]
+        if len(existing_depot_can_be_assigned) == 0:
+            return
+
+        return choice(existing_depot_can_be_assigned)
+
+    def __gt__(self, _other_vehicle) -> bool:
+        
+        return (self.fixed_cost > _other_vehicle.fixed_cost) or (self.total_capacity > _other_vehicle.total_capacity)
+
+    
+    @property
+    def total_capacity(self):
+        total_capacity = 0
+        for product in self.capacity:
+            total_capacity = self.capacity[product]
+
+        return total_capacity
+
+

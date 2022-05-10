@@ -82,9 +82,6 @@ class ConstraintChecker(BuilderFactory):
         current_vehicle = self.vehicles[vehicle_idx]  # Vehicle class
         warehose_depot = 0
 
-        if checking_depot.depot_name not in self.depot_builder.all_depot_names_with_time_window_constraint:
-            return True
-
         # For time window constraints, we need to consider two factors.
         # (1) The delivery time starting from warehouse and going back to warehouse.
         # (2) If there exist replenishments during delivery (which we need to insert it if needed).
@@ -92,6 +89,7 @@ class ConstraintChecker(BuilderFactory):
         shortage_points = self._find_shortage_points_in_route_helper(vehicle_idx, shortage_route)
         non_shortage_route = self._insert_replenish_points_for_route_helper(shortage_points, shortage_route)
         total_time_of_completing_route = self.resource_calc._calculate_time_for_current_route(vehicle_idx, non_shortage_route)
+
 
         if (total_time_of_completing_route > current_vehicle.maximum_available_time):
             return False

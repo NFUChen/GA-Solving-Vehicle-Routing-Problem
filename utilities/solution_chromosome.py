@@ -49,7 +49,6 @@ class SolutionChromosome(BuilderFactory):
             mutation_func = self.mutation_strategy.randomly_choose_mutation_strategy()
             chosen_vehicle_route = self.solution[chosen_vehicle_idx]
             mutated_route = mutation_func(chosen_vehicle_route)
-
             # after mutation, update chromosome fitness ( based on self.resources_used, and self.solution)
             self._update_resources_used(chosen_vehicle_idx, mutated_route)
             self.solution[chosen_vehicle_idx] = mutated_route

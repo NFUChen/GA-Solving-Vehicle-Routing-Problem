@@ -56,6 +56,40 @@ class DepotBuilder:
             or (depot.latest_time_must_be_delivered != 420)
             or (depot.depot_name == 0)
         ]
+    @property
+    def depots_without_time_window_constraints(self) -> List[int]:
+        return [
+            depot_idx
+            for depot_idx, depot in self.build_depots().items()
+            if depot_idx not in self.all_depot_names_with_time_window_constraint
+        ]
+    @property
+    def depots_need_to_be_assigned_early(self) -> List[int]: #
+        return [
+            depot_idx
+            for depot_idx, depot in self.build_depots().items()
+            if (depot.latest_time_must_be_delivered != 420) and (depot_idx != 0)
+        ]
+    @property
+    def depots_need_to_be_assigned_late(self) -> List[int]:
+        return [
+            depot_idx
+            for depot_idx, depot in self.build_depots().items()
+            if (depot.earilest_time_can_be_delivered != 0) and (depot_idx != 0)
+        ]
+
+    @property
+    def sorted_depots(self) -> List[int]:
+        '''
+        This property gets all depots sorted by latest time must be delivred.
+        '''
+        sorted_depots_to_be_assigned = sorted([depot
+                                               for depot in self.build_depots().values()
+                                               if depot.depot_name != 0])  # 0 is warehouse
+        return sorted_depots_to_be_assigned
+
+    
+        
 
     @property
     def all_depot_names(self) -> List[int]:

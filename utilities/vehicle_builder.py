@@ -49,6 +49,13 @@ class VehicleBuilder:
     def all_vehicle_names(self) -> List[int]:
         return [name for name in self._vehicles.keys()]
 
+    @property
+    def sorted_vehicles(self) -> List[int]:
+    
+        sorted_vehicles_can_be_assigned = sorted([depot
+                                               for depot in self.build_vehicles().values()]) 
+        return sorted_vehicles_can_be_assigned
+
     def __getitem__(self, vehicle_idx: int) -> Vehicle:
         '''
         __getitem__ method is served as accessor of all depots by specifying certain key of self._depots 

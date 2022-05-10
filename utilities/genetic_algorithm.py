@@ -83,12 +83,15 @@ class GeneticAlgorithm:
         while (True):
             parent_x = self._select_a_parent()  # returns a copy of a parent
             parent_y = self._select_a_parent()
-            if (parent_x.fitness != parent_y.fitness):
+            if (parent_x.fitness != parent_y.fitness or self.is_fitness_all_the_same):
                 break
 
         next_generation_children = parent_x.crossover(parent_y, self.current_level_crossover_rate)
 
         return next_generation_children
+    @property
+    def is_fitness_all_the_same(self):
+        return len(set([chromosome.fitness for chromosome in self.population])) == 1
 
     def _mutate_two_children_and_get_mutated_children(self, children: List[SolutionChromosome]) -> List[SolutionChromosome]:
         children_copy = deepcopy(children)
