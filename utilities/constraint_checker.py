@@ -125,7 +125,7 @@ class ConstraintChecker(BuilderFactory):
             if checking_depot_idx not in self.depot_builder.all_depot_names_with_time_window_constraint:
                 continue
             # before puting route into is_passing_time_window_constraints,
-            # it needs to processed such that [0,1,2,3,0,4,5,0] -> [1,2,3,4,5],
+            # it needs to be processed such that [0,1,2,3,0,4,5,0] -> [1,2,3,4,5],
             # since when it is passed into the cheker function,
             # it will be processed back to what it was i.e., [0,1,2,3,0,4,5,0]
             if not self.is_passing_time_window_constraints(vehicle_idx,
