@@ -83,8 +83,10 @@ class GeneticAlgorithm:
         while (True):
             parent_x = self._select_a_parent()  # returns a copy of a parent
             parent_y = self._select_a_parent()
-            if (parent_x.fitness != parent_y.fitness or self.is_fitness_all_the_same):
+            if (parent_x.fitness != parent_y.fitness):
                 break
+            if (self.is_fitness_all_the_same):
+                return
 
         next_generation_children = parent_x.crossover(parent_y, self.current_level_crossover_rate)
 

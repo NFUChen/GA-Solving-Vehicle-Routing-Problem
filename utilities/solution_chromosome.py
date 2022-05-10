@@ -57,18 +57,18 @@ class SolutionChromosome(BuilderFactory):
 
     def crossover(self, _other_solution_chromosome: SolutionChromosome, crossover_rate: float) -> 'List[SolutionChromosome] | None':
 
-        # random_value = random()
-        # if random_value > crossover_rate:
-        child_x = self._create_next_generation_self_with_new_solution(self.solution)
-        child_y = self._create_next_generation_self_with_new_solution(self.solution)
+        random_value = random()
+        if random_value > crossover_rate:
+            child_x = self._create_next_generation_self_with_new_solution(self.solution)
+            child_y = self._create_next_generation_self_with_new_solution(self.solution)
+            return [child_x, child_y]
+
+        child_x_solution, child_y_solution = self.crossover_strategy.single_point_crossover(
+            _other_solution_chromosome.solution, _other_solution_chromosome.vehicles_can_be_chosen_for_crossover)
+
+        child_x = self._create_next_generation_self_with_new_solution(child_x_solution)
+        child_y = self._create_next_generation_self_with_new_solution(child_y_solution)
         return [child_x, child_y]
-
-        # child_x_solution, child_y_solution = self.crossover_strategy.single_point_crossover(
-        #     _other_solution_chromosome.solution, _other_solution_chromosome.vehicles_can_be_chosen_for_crossover)
-
-        # child_x = self._create_next_generation_self_with_new_solution(child_x_solution)
-        # child_y = self._create_next_generation_self_with_new_solution(child_y_solution)
-        # return [child_x, child_y]
 
     def __repr__(self) -> str:
         chromosome = f"Chromosome: {self.solution}"
