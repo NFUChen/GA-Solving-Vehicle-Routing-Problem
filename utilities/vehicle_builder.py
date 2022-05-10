@@ -10,7 +10,7 @@ class VehicleBuilder:
             file_name.fuel_fee)
         self.vehicle_fuel_efficiency = pd.read_csv(
             file_name.fuel_efficiency)
-        self.vehicle_fixed_cost = pd.read_csv(
+        self.vehicle_total_fixed_cost = pd.read_csv(
             file_name.fixed_cost)
         self.vehicle_capacity = pd.read_csv(
             file_name.capacity, index_col=0)
@@ -31,13 +31,13 @@ class VehicleBuilder:
             vehicle_capacity = dict(self.vehicle_capacity.iloc[idx, :])
             vehicle_fuel_fee = self.vehicle_fuel_fee["fuel_fee"][idx]
             vehicle_fuel_efficiency = self.vehicle_fuel_efficiency["fuel_efficiency"][idx]
-            vehicle_fixed_cost = self.vehicle_fixed_cost["fixed_cost"][idx]
+            vehicle_total_fixed_cost = self.vehicle_total_fixed_cost["fixed_cost"][idx]
             vehicle_depots_delivery_status = list(self.vehicle_depots_delivery_status.iloc[idx, :])
 
             created_vehicle = Vehicle(vehicle_capacity,
                                       vehicle_fuel_fee,
                                       vehicle_fuel_efficiency,
-                                      vehicle_fixed_cost,
+                                      vehicle_total_fixed_cost,
                                       vehicle_depots_delivery_status,
                                       vehicle_name)
 

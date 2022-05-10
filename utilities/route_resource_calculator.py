@@ -100,6 +100,7 @@ class RouteResourceCalculator(BuilderFactory):
         total_service_time = 0
         total_distance = 0
         number_of_replenishments = 0
+        vehicle_total_fixed_cost = 0
         for vehicle_idx, route_info in route_info_dict.items():
             for start_depot_to_end_depot in route_info:
                 if len(start_depot_to_end_depot) != 2:  # e.g., (1,0, 2) replenishment point
@@ -109,10 +110,9 @@ class RouteResourceCalculator(BuilderFactory):
                 total_delivery_time += self.depots[start_depot].get_delivery_time_to_depot(end_depot)
                 total_service_time += self.vehicles[vehicle_idx].shipement_discharging_time
                 total_distance += self.depots[start_depot].get_distance_to_depot(end_depot)
+                vehicle_total_fixed_cost += self.vehicles[vehicle_idx].fixed_cost
 
-        fuel_fee = total_delivery_time * self.vehicles[vehicle_idx].fuel_fee
-        vehicle_fixed_cost = self.vehicles[vehicle_idx].fixed_cost
-
+        fuel_fee = total_distance * self.vehicles[vehicle_idx].fuel_fee * self.vehicles[vehicle_idx].fuel_efficiency
         time_on_duty_in_minute = total_delivery_time + total_service_time
         driver_cost = self._calculate_driver_cost(168, time_on_duty_in_minute)
 
@@ -121,7 +121,7 @@ class RouteResourceCalculator(BuilderFactory):
                 "delivery_time": total_delivery_time,
                 "service_time": total_service_time,  # 總卸貨時間
                 "total_time": time_on_duty_in_minute,
-                "vehicle_fixed_cost": vehicle_fixed_cost,
+                "vehicle_total_fixed_cost": vehicle_total_fixed_cost,
                 "driver_cost": driver_cost,
                 "number_of_replenishment": number_of_replenishments,
                 "number_of_vehicles_assigned": number_of_vehicles_assigned}

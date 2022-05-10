@@ -58,18 +58,18 @@ class SolutionChromosome(BuilderFactory):
 
     def crossover(self, _other_solution_chromosome: SolutionChromosome, crossover_rate: float) -> 'List[SolutionChromosome] | None':
 
-        random_value = random()
-        if random_value > crossover_rate:
-            child_x = self._create_next_generation_self_with_new_solution(self.solution)
-            child_y = self._create_next_generation_self_with_new_solution(self.solution)
-            return [child_x, child_y]
-
-        child_x_solution, child_y_solution = self.crossover_strategy.single_point_crossover(
-            _other_solution_chromosome.solution, _other_solution_chromosome.vehicles_can_be_chosen_for_crossover)
-
-        child_x = self._create_next_generation_self_with_new_solution(child_x_solution)
-        child_y = self._create_next_generation_self_with_new_solution(child_y_solution)
+        # random_value = random()
+        # if random_value > crossover_rate:
+        child_x = self._create_next_generation_self_with_new_solution(self.solution)
+        child_y = self._create_next_generation_self_with_new_solution(self.solution)
         return [child_x, child_y]
+
+        # child_x_solution, child_y_solution = self.crossover_strategy.single_point_crossover(
+        #     _other_solution_chromosome.solution, _other_solution_chromosome.vehicles_can_be_chosen_for_crossover)
+
+        # child_x = self._create_next_generation_self_with_new_solution(child_x_solution)
+        # child_y = self._create_next_generation_self_with_new_solution(child_y_solution)
+        # return [child_x, child_y]
 
     def __repr__(self) -> str:
         chromosome = f"Chromosome: {self.solution}"
@@ -78,10 +78,10 @@ class SolutionChromosome(BuilderFactory):
         fuel_fee = f"Fuel Fee: ${int(resources['fuel_fee'])}"
         distance = f"Distance: {int(resources['distance'])} km"
         total_delivery_time = f"Total Delivery Time: {round(resources['delivery_time'] + resources['service_time'], 2)} Mins"
-        vehicle_fixed_cost = f"Vehicle Fixed Cost: ${int(resources['vehicle_fixed_cost'])}"
+        vehicle_total_fixed_cost = f"Vehicle Fixed Cost: ${int(resources['vehicle_total_fixed_cost'])}"
         driver_cost = f"Driver Cost: ${int(resources['driver_cost'])}"
         total_cost_amount = int(
-            resources['fuel_fee']) + resources['vehicle_fixed_cost'] + int(resources['driver_cost'])
+            resources['fuel_fee']) + resources['vehicle_total_fixed_cost'] + int(resources['driver_cost'])
         total_cost = f"Total Cost: ${total_cost_amount}"
         number_of_vehicles_assigned = f"Number of Vehicles Assigned: {resources['number_of_vehicles_assigned']}"
         number_of_replenishment = f"Number of Replenishsments: {resources['number_of_replenishment']}"
@@ -93,7 +93,7 @@ class SolutionChromosome(BuilderFactory):
             chromosome,
             total_cost,
             fuel_fee,
-            vehicle_fixed_cost,
+            vehicle_total_fixed_cost,
             driver_cost,
             distance,
             total_delivery_time,
@@ -122,7 +122,7 @@ class SolutionChromosome(BuilderFactory):
         resources = self.resources_used
         total_cost = (
             resources["fuel_fee"] +
-            resources["vehicle_fixed_cost"] +
+            resources["vehicle_total_fixed_cost"] +
             resources["driver_cost"]
         )
 
