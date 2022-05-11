@@ -1,8 +1,7 @@
-from typing import List, Dict, Union
+from typing import List, Dict
 from copy import deepcopy
 from time import time
 from random import choice
-from click import progressbar
 from .base_class import BuilderFactory
 from .constraint_checker import ConstraintChecker
 from .route_resource_calculator import RouteResourceCalculator
