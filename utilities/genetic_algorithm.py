@@ -116,12 +116,14 @@ class GeneticAlgorithm:
 
         return False
 
-    def _visualize_current_iteration(self):
+    def _visualize_current_iteration(self) -> None:
         print(f"Iteration: {self.current_iteration} ")
         print(f"Total Fitness: {self.total_fitness_of_current_population}")
         print(f"Best Fitness: {self.current_best_solution.fitness}")
         print(f"New Population Fitness: {','.join([str(round(chromosome.fitness, 4)) for chromosome in self.population])}")
-        print("-" * 120, '\n')
+        print("-" * 100, '\n')
+
+
     def solve(self) -> None:
         self._generate_initial_population()
         print(f"First Generation Population is Initialized")
@@ -131,7 +133,7 @@ class GeneticAlgorithm:
                 crossovered_children = self._crossover_two_parents_and_get_new_generation_children()
                 mutated_children = self._mutate_two_children_and_get_mutated_children(crossovered_children) 
                 next_generation_population.extend(mutated_children)
-                
+
             self._update_population_info(next_generation_population)
             self._visualize_current_iteration()
             self.current_iteration += 1
