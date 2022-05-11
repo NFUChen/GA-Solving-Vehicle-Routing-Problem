@@ -48,8 +48,8 @@ class CrossoverStrategy:
         return choice(other_solution_chromosome_vehicles_can_be_chosen_for_crossover)
 
     def _randomly_choose_a_depot_in_a_route(self, route: List[int]) -> int:
-        route_without_warehouse_depot = [depot_idx 
+        route_without_time_window_constraints = [depot_idx 
                                         for depot_idx in route 
-                                        if depot_idx != 0]
+                                        if not depot_idx in self.immutable_depot_names]
 
-        return choice(route_without_warehouse_depot)
+        return choice(route_without_time_window_constraints)

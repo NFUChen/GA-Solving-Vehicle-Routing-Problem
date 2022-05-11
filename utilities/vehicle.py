@@ -107,7 +107,7 @@ class Vehicle:
 
     
     @property
-    def total_capacity(self):
+    def total_capacity(self) -> int:
         total_capacity = 0
         for product in self.capacity:
             total_capacity = self.capacity[product]

@@ -119,9 +119,9 @@ class SolutionGenerator(BuilderFactory):
             return
         current_assigned_route = vehicles_with_assigned_depots[current_vehicle_idx]
         for depot in existing_depots:
-            if not self.checker.is_passing_time_window_constraints(current_vehicle_idx, current_assigned_route, depot):
-                return
             if not depot in self.vehicles[current_vehicle_idx]._available_depots:
+                continue
+            if not self.checker.is_passing_time_window_constraints(current_vehicle_idx, current_assigned_route, depot):
                 continue
             current_assigned_route.append(depot)
             existing_depots.remove(depot)
