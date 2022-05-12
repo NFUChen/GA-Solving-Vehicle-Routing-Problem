@@ -9,7 +9,7 @@ class CrossoverStrategy:
         self.solution = deepcopy(solution)
         self.immutable_depot_names = immutable_depot_names
         self.vehicles_can_be_chosen_for_crossover = vehicles_can_be_chosen_for_crossover
-        self.MAXIMUM_ATTEMPT = 3
+        self.MAXIMUM_ATTEMPT = 10
 
     def single_point_crossover(self, _other_solution: Solution, other_solution_chromosome_vehicles_can_be_chosen_for_crossover: List[int]) -> List[Solution]:
         if (len(other_solution_chromosome_vehicles_can_be_chosen_for_crossover) == 0 or len(self.vehicles_can_be_chosen_for_crossover) == 0):

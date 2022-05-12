@@ -5,7 +5,7 @@ from random import choice, choices
 class MutationStrategy:
     def __init__(self, immutable_depot_names:List[int]) -> None:
         self.immutable_depot_names = immutable_depot_names
-        self.MAXIMUM_ATTEMPT = 3
+        self.MAXIMUM_ATTEMPT = 10
 
     def reverse_mutate(self, route: List[int]) -> List[int]:
         copy_route = route.copy()
