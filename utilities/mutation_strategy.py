@@ -68,7 +68,7 @@ class MutationStrategy:
         
 
 
-    def _randomly_choose_two_different_index_positions(self, route:List[int]) -> 'List[int] | None':
+    def _randomly_choose_two_different_index_positions(self, route:List[int]) -> List[int] | None:
         route_idx_can_be_chosen = [
             route_idx 
             for route_idx, depot_idx in enumerate(route) 

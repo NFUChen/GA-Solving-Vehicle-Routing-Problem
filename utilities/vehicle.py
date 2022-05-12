@@ -48,7 +48,6 @@ class Vehicle:
         fuel_fee = f"Fuel Fee: ${self.fuel_fee}"
         fuel_efficiency = f"Fuel Efficiency: {self.fuel_efficiency} l/km"
         fixed_cost = f"Fixed Cost: ${self.fixed_cost}"
-        # depots_delivery_status = f"Depots Delivery Status: {self.depots_delivery_status}\n"
         _available_depots = f"Depots Can be Delivered: {self._available_depots}"
         sep = "-" * 60
 
@@ -91,7 +90,7 @@ class Vehicle:
 
         return depot_id in self._available_depots
 
-    def assign_depot(self, existing_depot:List[int]) -> 'int | None':
+    def assign_depot(self, existing_depot:List[int]) -> int | None:
         existing_depot_can_be_assigned = [
             depot for depot in existing_depot 
             if depot in self._available_depots

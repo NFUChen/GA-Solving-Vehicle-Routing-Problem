@@ -17,7 +17,7 @@ class SolutionChromosome(BuilderFactory):
                  solution: Solution,
                  immutable_depot_names: List[int],
                  resources_used: Dict[str, float] = None,
-                 generation: int = 0, is_children: bool = False) -> None:
+                 generation: int = 0) -> None:
         self.solution = solution
 
         # dont' choose vehicle without any depots being assigned, or len(route) < 3, [0,1,0] -> will cause mutation error,
@@ -30,7 +30,6 @@ class SolutionChromosome(BuilderFactory):
         self._vehicle_mutaion_and_crossover_dict = self._filter_vehicle_can_be_chosen_for_mutation_and_crossover()
         self.vehicles_can_be_chosen_for_mutation = self._vehicle_mutaion_and_crossover_dict["mutation"]
         self.vehicles_can_be_chosen_for_crossover = self._vehicle_mutaion_and_crossover_dict["crossover"]
-        self.is_children = is_children
         self.mutation_strategy = MutationStrategy(immutable_depot_names)
         self.crossover_strategy = CrossoverStrategy(solution, immutable_depot_names,
                                                     self.vehicles_can_be_chosen_for_crossover)
@@ -55,7 +54,7 @@ class SolutionChromosome(BuilderFactory):
 
         return self
 
-    def crossover(self, _other_solution_chromosome: SolutionChromosome, crossover_rate: float) -> 'List[SolutionChromosome] | None':
+    def crossover(self, _other_solution_chromosome: SolutionChromosome, crossover_rate: float) -> List[SolutionChromosome] | None:
 
         random_value = random()
         if random_value > crossover_rate:
@@ -79,8 +78,7 @@ class SolutionChromosome(BuilderFactory):
         total_delivery_time = f"Total Delivery Time: {round(resources['delivery_time'] + resources['service_time'], 2)} Mins"
         vehicle_total_fixed_cost = f"Vehicle Fixed Cost: ${int(resources['vehicle_total_fixed_cost'])}"
         driver_cost = f"Driver Cost: ${int(resources['driver_cost'])}"
-        total_cost_amount = int(
-            resources['fuel_fee']) + resources['vehicle_total_fixed_cost'] + int(resources['driver_cost'])
+        total_cost_amount = int(resources['fuel_fee']) + resources['vehicle_total_fixed_cost'] + int(resources['driver_cost'])
         total_cost = f"Total Cost: ${total_cost_amount}"
         number_of_vehicles_assigned = f"Number of Vehicles Assigned: {resources['number_of_vehicles_assigned']}"
         number_of_replenishment = f"Number of Replenishsments: {resources['number_of_replenishment']}"
@@ -130,9 +128,9 @@ class SolutionChromosome(BuilderFactory):
     def _create_next_generation_self_with_new_solution(self, new_solution: Solution) -> SolutionChromosome:
         # passing in self.resources_used is for performance concern, which avoidss duplicate computation.
         if new_solution == self.solution:  # two parents are not successfully crossovered
-            return SolutionChromosome(new_solution, self.immutable_depot_names, self.resources_used, self.generation + 1, is_children=True)
+            return SolutionChromosome(new_solution, self.immutable_depot_names, self.resources_used, self.generation + 1)
 
-        return SolutionChromosome(new_solution, self.immutable_depot_names, None, self.generation + 1, is_children=True)
+        return SolutionChromosome(new_solution, self.immutable_depot_names, None, self.generation + 1)
 
     def _randomly_choose_a_vehicle(self) -> int:
         

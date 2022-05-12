@@ -80,13 +80,13 @@ class RouteResourceCalculator(BuilderFactory):
                     check_start_depot = route[idx]
                     check_warehouse_depot = route[idx + 1]
                     check_end_depot = route[idx + 2]
-                    if check_warehouse_depot != 0:  # this is replenish point
+                    if check_warehouse_depot != 0: 
                         continue
                     replenish_route_info = (check_start_depot, check_warehouse_depot, check_end_depot)
                     route_info_dict[vehicle_idx].append(replenish_route_info)
         return route_info_dict
 
-    def calculate_solution_resources(self, solution: Solution) -> Dict[str, 'float | int']:
+    def calculate_solution_resources(self, solution: Solution) -> Dict[str, float | int]:
         '''
         This method is a public API expected to expose to users.
         Functionality:
@@ -127,7 +127,7 @@ class RouteResourceCalculator(BuilderFactory):
                 "number_of_replenishment": number_of_replenishments,
                 "number_of_vehicles_assigned": number_of_vehicles_assigned}
 
-    def calculate_route_resources(self, vehicle_idx: int, route: List[int]) -> Dict[str, 'float | int']:
+    def calculate_route_resources(self, vehicle_idx: int, route: List[int]) -> Dict[str, float | int]:
         '''
         This method is a public API expected to expose to users.
         Functionality:

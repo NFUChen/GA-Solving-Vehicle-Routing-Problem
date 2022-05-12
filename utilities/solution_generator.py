@@ -65,14 +65,16 @@ class SolutionGenerator(BuilderFactory):
 
         '''
         # [1,2 ...., n], 0 (warehouse) should be excluded
-        # all_depots_to_be_assigned = deepcopy(self.sorted_depots_to_be_assigned)
         vehicles_with_assigned_depots = deepcopy(self.vehicles_with_assigned_depots)  # {0:[], 1:[], 2:[] ..., n:[]}
         
         early_assigned_depots = self.depot_builder.depots_need_to_be_assigned_early
         regular_depots = self.depot_builder.depots_without_time_window_constraints
         late_assigned_depots = self.depot_builder.depots_need_to_be_assigned_late
         
-        order_of_depots_assigning = [early_assigned_depots, regular_depots]
+        order_of_depots_assigning = choice([
+            [early_assigned_depots, regular_depots], 
+            [regular_depots, early_assigned_depots]
+        ])
 
         while (True):
             current_vehicle_idx = choice(self.all_vehicle_names)
