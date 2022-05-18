@@ -90,7 +90,7 @@ class Vehicle:
 
         return depot_id in self._available_depots
 
-    def assign_depot(self, existing_depot:List[int]) -> int | None:
+    def assign_depot(self, existing_depot:List[int]) -> 'int | None':
         existing_depot_can_be_assigned = [
             depot for depot in existing_depot 
             if depot in self._available_depots

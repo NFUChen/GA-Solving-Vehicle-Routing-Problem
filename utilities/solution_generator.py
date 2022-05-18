@@ -48,13 +48,6 @@ class SolutionGenerator(BuilderFactory):
         print(f"Available Depot Names: {self.all_depot_names}")
         print(f"All Depots With Time Window Constraints: {self.all_depot_names_with_time_window_constraints}")
 
-    def _start_from_warehouse_and_go_back_to_warehouse_helper(self, route: List[int]) -> List[int]:
-        '''
-        A helper function for .generate_initial_raw_solution(),
-        which adds 1 zero at the beginning and at the end of the route,
-        indicating that the route should be starting from warehouse, and going back to warehouse
-        '''
-        return [0, *route, 0]
 
     @timer
     def _generate_initial_raw_solution(self) -> 'Solution | List[int]':
@@ -78,7 +71,6 @@ class SolutionGenerator(BuilderFactory):
 
         while (True):
             current_vehicle_idx = choice(self.all_vehicle_names)
-            current_assigned_route = vehicles_with_assigned_depots[current_vehicle_idx]
             for existing_depots in order_of_depots_assigning:
                 self._assign_depots(vehicles_with_assigned_depots, current_vehicle_idx, existing_depots)
 
@@ -108,9 +100,8 @@ class SolutionGenerator(BuilderFactory):
             if len(assigned_depots) == 0:  # if assigned route is a empty list
                 continue
 
-            shortage_route = self._start_from_warehouse_and_go_back_to_warehouse_helper(assigned_depots)
-            shortage_points = self.optimizer.find_shortage_points_in_route_helper(vehicle_idx, shortage_route)
-            non_shortage_route = self.optimizer.insert_replenish_points_for_route_helper(shortage_points, shortage_route)
+            non_shortage_route = self.optimizer.insert_relenish_points(vehicle_idx, assigned_depots)
+
 
             vehicles_with_assigned_depots[vehicle_idx] = non_shortage_route
         return vehicles_with_assigned_depots

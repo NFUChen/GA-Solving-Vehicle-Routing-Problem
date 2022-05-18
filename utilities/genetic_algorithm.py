@@ -86,7 +86,7 @@ class GeneticAlgorithm:
             if (parent_x.fitness != parent_y.fitness):
                 break
             if (self.is_fitness_all_the_same):
-                return
+                return parent_x.crossover(parent_y, self.current_level_crossover_rate)
 
         next_generation_children = parent_x.crossover(parent_y, self.current_level_crossover_rate)
 

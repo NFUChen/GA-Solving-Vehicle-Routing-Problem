@@ -86,7 +86,7 @@ class RouteResourceCalculator(BuilderFactory):
                     route_info_dict[vehicle_idx].append(replenish_route_info)
         return route_info_dict
 
-    def calculate_solution_resources(self, solution: Solution) -> Dict[str, float | int]:
+    def calculate_solution_resources(self, solution: Solution) -> Dict[str, 'float | int']:
         '''
         This method is a public API expected to expose to users.
         Functionality:
@@ -127,7 +127,7 @@ class RouteResourceCalculator(BuilderFactory):
                 "number_of_replenishment": number_of_replenishments,
                 "number_of_vehicles_assigned": number_of_vehicles_assigned}
 
-    def calculate_route_resources(self, vehicle_idx: int, route: List[int]) -> Dict[str, float | int]:
+    def calculate_route_resources(self, vehicle_idx: int, route: List[int]) -> Dict[str, 'float | int']:
         '''
         This method is a public API expected to expose to users.
         Functionality:

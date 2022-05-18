@@ -54,7 +54,7 @@ class SolutionChromosome(BuilderFactory):
 
         return self
 
-    def crossover(self, _other_solution_chromosome: SolutionChromosome, crossover_rate: float) -> List[SolutionChromosome] | None:
+    def crossover(self, _other_solution_chromosome: SolutionChromosome, crossover_rate: float) -> 'List[SolutionChromosome] | None':
 
         random_value = random()
         if random_value > crossover_rate:
