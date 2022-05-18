@@ -1,11 +1,14 @@
 from typing import List, Dict
 from copy import deepcopy
 from random import choice
+from .optimizer import Optimizer
 Solution = Dict[int, List[int]]
 
 
 class CrossoverStrategy:
     def __init__(self, solution: Solution, immutable_depot_names: List[int], vehicles_can_be_chosen_for_crossover: List[int]) -> None:
+        self.optimizer = Optimizer()
+
         self.solution = deepcopy(solution)
         self.immutable_depot_names = immutable_depot_names
         self.vehicles_can_be_chosen_for_crossover = vehicles_can_be_chosen_for_crossover
@@ -39,6 +42,10 @@ class CrossoverStrategy:
         _other_solution[other_vehicle_idx].remove(other_depot)
         _other_solution[other_vehicle_idx].insert(other_depot_idx, self_depot_idx)
 
+        self._insert_replenish_points_for_current_vehicle(self_vehicle_idx, self.solution)
+        self._insert_replenish_points_for_current_vehicle(other_vehicle_idx, _other_solution)
+
+
         return [self.solution, _other_solution]  # as child_x and child_y
 
     def _randomly_choose_a_vehicle(self) -> int:
@@ -53,3 +60,12 @@ class CrossoverStrategy:
                                         if not depot_idx in self.immutable_depot_names]
 
         return choice(route_without_time_window_constraints)
+
+    def _insert_replenish_points_for_current_vehicle(self, vehicle_idx:int, crossovered_soluton:Solution) -> None:
+
+        warehouse_depot = 0
+        current_route = crossovered_soluton[vehicle_idx]
+        route_without_warehouse_depot = [depot_idx for depot_idx in current_route if depot_idx != warehouse_depot]
+        non_shortage_route = self.optimizer.insert_warehouse_depots_and_relenish_points(vehicle_idx,route_without_warehouse_depot)
+        crossovered_soluton[vehicle_idx] = non_shortage_route
+

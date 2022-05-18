@@ -46,7 +46,7 @@ class Optimizer:
         '''
         return [0, *route, 0]
 
-    def insert_relenish_points(self, vehicle_idx:int,route:List[int]) -> List[int]:
+    def insert_warehouse_depots_and_relenish_points(self, vehicle_idx:int,route:List[int]) -> List[int]:
         copy_route = route.copy()
 
         shortage_route = self._start_from_warehouse_and_go_back_to_warehouse_helper(copy_route)
