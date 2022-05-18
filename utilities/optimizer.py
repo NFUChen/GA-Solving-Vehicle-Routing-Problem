@@ -26,6 +26,7 @@ class Optimizer:
             if copy_vehicle.is_out_of_stock():
                 shortage_points.append(depot_name)
                 copy_vehicle.replenish()
+                copy_vehicle.discharge(current_depot.demand)
         return shortage_points
 
     def _insert_replenish_points_for_route_helper(self, replenish_points: List[int], route: List[int]) -> List[int]:

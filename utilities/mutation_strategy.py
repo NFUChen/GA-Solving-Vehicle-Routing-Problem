@@ -15,7 +15,7 @@ class MutationStrategy:
             if two_points is None:
                 return copy_route
             left_ptr, right_ptr = two_points 
-            if not self._is_reverse_mutation_affecting_immutable_depots(route, [left_ptr, right_ptr]):
+            if not self._is_mutation_affecting_immutable_depots(route, [left_ptr, right_ptr]):
                 break
             number_of_attempts_to_find_index += 1
 
@@ -29,17 +29,6 @@ class MutationStrategy:
             right_ptr -= 1
         return copy_route
 
-    def _is_reverse_mutation_affecting_immutable_depots(self,route:List[int],affecting_route_idx: List[int]) -> bool:
-
-        start_idx, end_idx = affecting_route_idx  # e.g., 2, 4
-        affecting_route = route[start_idx: end_idx+1 ] #route: [0, 1,2,3,4,5,6,0] -> [2,3,4]
-        for depot in affecting_route:
-            if depot in self.immutable_depot_names:
-                return True
-
-        return False
-        
-
     def two_points_mutate(self, route: List[int]) -> List[int]:
         copy_route = route.copy()
         number_of_attempts_to_find_index = 0
@@ -48,7 +37,7 @@ class MutationStrategy:
             if two_points is None:
                 return copy_route
             left_ptr, right_ptr = two_points 
-            if not self._is_two_points_mutation_affecting_immutable_depots(route, [left_ptr, right_ptr]):
+            if not self._is_mutation_affecting_immutable_depots(route, [left_ptr, right_ptr]):
                 break
             number_of_attempts_to_find_index += 1
 
@@ -58,12 +47,14 @@ class MutationStrategy:
 
         return copy_route
 
-    def _is_two_points_mutation_affecting_immutable_depots(self, route: List[int], affecting_route_idx: List[int]) -> bool:
-        
-        for route_idx in affecting_route_idx:
-            depot = route[route_idx]
+    def _is_mutation_affecting_immutable_depots(self,route:List[int],affecting_route_idx: List[int]) -> bool:
+
+        start_idx, end_idx = affecting_route_idx  # e.g., 2, 4
+        affecting_route = route[start_idx: end_idx+1 ] #route: [0, 1,2,3,4,5,6,0] -> [2,3,4]
+        for depot in affecting_route:
             if depot in self.immutable_depot_names:
                 return True
+
         return False
         
 

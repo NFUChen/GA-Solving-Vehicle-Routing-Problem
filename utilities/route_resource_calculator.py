@@ -63,7 +63,7 @@ class RouteResourceCalculator(BuilderFactory):
         return (time_on_duty_in_minute / 60) * hourly_wage
 
     # {0: [(0, 7)]
-    def _get_all_route_info_as_dict(self, solution: Solution) -> Dict[int, List[Tuple[int, int]]]:
+    def _get_all_route_info_as_dict(self, solution: Solution) -> Dict[int, 'List[Tuple[int, int] | Tuple[int, int, int]']:
         route_info_dict = {}
         for vehicle_idx, route in solution.items():
             if len(route) == 0:
@@ -112,10 +112,9 @@ class RouteResourceCalculator(BuilderFactory):
                 total_distance += self.depots[start_depot].get_distance_to_depot(end_depot)
                 
             vehicle_total_fixed_cost += self.vehicles[vehicle_idx].fixed_cost
-
         fuel_fee = total_distance * self.vehicles[vehicle_idx].fuel_fee * self.vehicles[vehicle_idx].fuel_efficiency
         time_on_duty_in_minute = total_delivery_time + total_service_time
-        driver_cost = self._calculate_driver_cost(168, time_on_duty_in_minute)
+        driver_cost = self._calculate_driver_cost(60, time_on_duty_in_minute)
 
         return {"fuel_fee": fuel_fee,
                 "distance": total_distance,

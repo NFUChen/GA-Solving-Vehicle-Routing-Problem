@@ -66,6 +66,6 @@ class CrossoverStrategy:
         warehouse_depot = 0
         current_route = crossovered_soluton[vehicle_idx]
         route_without_warehouse_depot = [depot_idx for depot_idx in current_route if depot_idx != warehouse_depot]
-        non_shortage_route = self.optimizer.insert_warehouse_depots_and_relenish_points(vehicle_idx,route_without_warehouse_depot)
+        non_shortage_route = self.optimizer.insert_warehouse_depots_and_relenishment_points(vehicle_idx,route_without_warehouse_depot)
         crossovered_soluton[vehicle_idx] = non_shortage_route
 

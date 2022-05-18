@@ -100,7 +100,7 @@ class SolutionGenerator(BuilderFactory):
             if len(assigned_depots) == 0:  # if assigned route is a empty list
                 continue
 
-            non_shortage_route = self.optimizer.insert_warehouse_depots_and_relenish_points(vehicle_idx, assigned_depots)
+            non_shortage_route = self.optimizer.insert_warehouse_depots_and_relenishment_points(vehicle_idx, assigned_depots)
             vehicles_with_assigned_depots[vehicle_idx] = non_shortage_route
         return vehicles_with_assigned_depots
 

@@ -52,7 +52,7 @@ class ConstraintChecker(BuilderFactory):
         # (1) The delivery time starting from warehouse and going back to warehouse.
         # (2) If there exist replenishments during delivery (which we need to insert it if needed).
         checking_route = [*temp_assinged_route, checking_depot_idx]
-        non_shortage_route = self.optimizer.insert_warehouse_depots_and_relenish_points(vehicle_idx,checking_route)
+        non_shortage_route = self.optimizer.insert_warehouse_depots_and_relenishment_points(vehicle_idx,checking_route)
 
         total_time_of_completing_route = self.resource_calc._calculate_time_for_current_route(vehicle_idx, non_shortage_route)
 
